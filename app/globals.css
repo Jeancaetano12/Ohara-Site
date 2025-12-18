@@ -1,42 +1,61 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* --- TEMA CLARO (Padrão) --- */
+  --bg-color: #ffffff;
+  --text-color: #4b5563;
+  --accent-color: #8b5cf6;
+  --secondary-accent: #a78bfa;
+  --separator-color: #e5e7eb;
+  --logo-color: #1a1a1a;
+  
+  /* Variáveis de Efeitos */
+  --header-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  --text-glow: none;
+  --logo-glow: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Quando a classe 'dark' for adicionada ao BODY ou HTML */
+.dark {
+  /* --- TEMA ESCURO (Neon) --- */
+  --bg-color: #130b20; /* O Roxo Profundo do background */
+  --text-color: #e0e0e0;
+  --accent-color: #00f3ff; /* Ciano Neon */
+  --secondary-accent: #bd00ff;
+  --separator-color: #2d1b4e;
+  --logo-color: #ffffff;
+
+  --header-shadow: 0 4px 20px rgba(0, 243, 255, 0.15);
+  --text-glow: 0 0 10px rgba(0, 243, 255, 0.5);
+  --logo-glow: 0 0 15px rgba(189, 0, 255, 0.6);
 }
 
-html,
+/* Aplica as cores ao corpo do site inteiro */
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0; /* Garante que não tenha bordas brancas */
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+@theme {
+/* Fundo: Um roxo quase preto, profundo */
+  --color-ohara-dark: #0f0518; 
+  
+  /* Destaque: Magenta Neon mais vibrante para contrastar com o preto */
+  --color-ohara-pink: #d946ef; 
+  
+  /* Detalhes: Laranja Queimado */
+  --color-ohara-orange: #fb923c; 
+  
+  /* Contraste: Ciano elétrico (fica lindo no preto) */
+  --color-ohara-blue: #06b6d4; 
+  
+  /* Texto: Branco gelo levemente azulado */
+  --color-ohara-white: #f8fafc;
+  
+  /* Configuração de fonte (opcional, mas recomendada para pixel art/moderno) */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }

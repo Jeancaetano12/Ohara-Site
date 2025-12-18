@@ -1,66 +1,106 @@
 import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col gap-20 pb-20">
+      
+      {/* --- HERO SECTION --- */}
+      <section className="relative flex flex-col items-center justify-center text-center px-4 pt-10 md:pt-20">
+        
+        {/* Efeito de brilho de fundo (Glow) - Muda de cor com o tema */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-ohara-pink dark:bg-ohara-blue/20 blur-[200px] rounded-full -z-10" />
+
+        {/* Logo Grande Animada */}
+        <div className="relative w-40 h-40 md:w-56 md:h-56 mb-8 hover:scale-105 transition-transform duration-500">
+          <Image 
+            src="/OharaDiscordLogo.png" 
+            alt="Árvore de Ohara" 
+            fill 
+            className="object-contain drop-shadow-2xl rounded-4xl border-2 border-ohara-pink/20 dark:border-ohara-white/10"
+            priority
+          />
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Títulos com troca de cor inteligente */}
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+          <span className="text-ohara-dark dark:text-ohara-white transition-colors">
+            Bem-vindo à 
+          </span>{" "}
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-ohara-pink to-ohara-orange">
+            Ohara
+          </span>
+        </h1>
+
+        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10 text-gray-700 dark:text-gray-300 transition-colors">
+          O refúgio do conhecimento. Uma comunidade focada em compartilhar sabedoria, 
+          pixel art e desenvolvimento.
+        </p>
+
+        {/* Botões de Ação */}
+        <div className="flex flex-wrap gap-4 justify-center">
+          <Link 
+            href="/pages/comunidade" 
+            className="px-8 py-3 rounded-full bg-ohara-pink text-white font-bold text-lg shadow-lg shadow-ohara-pink/30 hover:shadow-ohara-pink/50 hover:scale-105 transition-all"
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Explorar Comunidade
+          </Link>
+          <button className="px-8 py-3 rounded-full border-2 border-ohara-dark/10 dark:border-ohara-white/20 hover:bg-ohara-dark/5 dark:hover:bg-ohara-white/10 transition-all font-semibold">
+            Saiba Mais
+          </button>
         </div>
-      </main>
+      </section>
+
+      {/* --- FEATURE GRID (Teste de Contraste) --- */}
+      <section className="container mx-auto px-4">
+        <h2 className="text-2xl font-bold text-center mb-10 text-ohara-blue dark:text-ohara-orange uppercase tracking-widest">
+          O que você encontra aqui
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Card 1 */}
+          <FeatureCard 
+            title="Conhecimento" 
+            emoji="📚" 
+            desc="Artigos, tutoriais e discussões profundas sobre tecnologia e design."
+          />
+          {/* Card 2 */}
+          <FeatureCard 
+            title="Interação" 
+            emoji="💬" 
+            desc="Um espaço seguro para trocar ideias e fazer networking com outros membros."
+          />
+          {/* Card 3 */}
+          <FeatureCard 
+            title="Projetos" 
+            emoji="🚀" 
+            desc="Showcase de projetos desenvolvidos pela comunidade e open source."
+          />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+// Componente auxiliar para os Cards (Para não repetir código)
+function FeatureCard({ title, emoji, desc }: { title: string, emoji: string, desc: string }) {
+  return (
+    <div className="
+      p-8 rounded-2xl border transition-all duration-300
+      /* Estilos Light Mode */
+      bg-white border-ohara-pink/10 shadow-xl shadow-ohara-dark/5
+      /* Estilos Dark Mode */
+      dark:bg-white/5 dark:border-ohara-white/10 dark:hover:bg-white/10
+    ">
+      <div className="text-4xl mb-4 bg-ohara-white dark:bg-ohara-dark w-16 h-16 flex items-center justify-center rounded-xl shadow-inner">
+        {emoji}
+      </div>
+      <h3 className="text-xl font-bold mb-2 text-ohara-dark dark:text-ohara-pink">
+        {title}
+      </h3>
+      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+        {desc}
+      </p>
     </div>
   );
 }
