@@ -59,3 +59,11 @@ body {
   /* Configuração de fonte (opcional, mas recomendada para pixel art/moderno) */
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
+@keyframes border-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-border-spin {
+  animation: border-spin 4s linear infinite;
+}

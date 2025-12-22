@@ -14,7 +14,7 @@ export default function Comunidade() {
             </div>
             <div className="relative z-10">
                 <p className="text-red-600 dark:text-red-300 mb-4 text-center leading-relaxed">
-                    Esta seção da comunidade está em construção. Estamos trabalhando para trazer conteúdos e funcionalidades incríveis para você em breve!
+                    Esta seção da comunidade está em construção.
                 </p>
             </div>
         </div>
