@@ -24,12 +24,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Essa mágica aplica a classe 'dark' no corpo do site (body)
-    const body = document.body;
+    const root = window.document.documentElement;
     if (isDarkMode) {
-      body.classList.add('dark');
+      root.classList.add('dark');
       localStorage.setItem('ohara-theme', 'dark');
     } else {
-      body.classList.remove('dark');
+      root.classList.remove('dark');
       localStorage.setItem('ohara-theme', 'light');
     }
   }, [isDarkMode]);

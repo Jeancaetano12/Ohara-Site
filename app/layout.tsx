@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className="antialiased bg-ohara-white dark:bg-ohara-dark text-ohara-dark dark:text-ohara-white transition-colors duration-300">
         <ThemeProvider>
           <Header />
-          <main className="pt-24 min-h-screen">
+          <main className="pt-8 min-h-screen">
             {children}
           </main>
         </ThemeProvider>

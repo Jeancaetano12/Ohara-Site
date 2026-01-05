@@ -41,19 +41,20 @@ export function useMembers(initialPage = 1) {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
+  const [refreshTick, setRefreshTick] = useState(0);
+
+  const refresh = () => setRefreshTick(prev => prev + 1);
 
   useEffect(() => {
     const fetchMembers = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Substitua pela URL real do seu Back-end
-        // Exemplo: http://localhost:3000/membros?page=1&limit=10
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/membros?page=${page}&limit=10`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'x-site-key': process.env.NEXT_PUBLIC_SITE_KEY || '' // Sua chave de segurança
+            'x-site-key': process.env.NEXT_PUBLIC_SITE_KEY || ''
           }
         });
 
@@ -86,7 +87,49 @@ export function useMembers(initialPage = 1) {
     };
 
     fetchMembers();
-  }, [page]);
+  }, [page, refreshTick]);
 
-  return { members, loading, error, setPage, page, totalPages };
+  return { members, loading, error, setPage, page, totalPages, refresh };
+}
+
+export function useSearchMember() {
+  const [member, setMember] = useState<Member[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Receba o nome diretamente na função de busca
+  const searchMember = async (name: string) => { 
+    if (!name || !name.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/membros/search?name=${encodeURIComponent(name)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-site-key': process.env.NEXT_PUBLIC_SITE_KEY || ''
+        }
+      });
+
+      if (!response.ok) throw new Error('Erro ao buscar membros');
+      const data = await response.json();
+      console.log('Dados recebidos pela busca por nome:', data);
+      if (data.data && Array.isArray(data.data)) {
+        setMember(data.data);
+      } else if (Array.isArray(data)) {
+        setMember(data);
+      } else {
+        setMember([]);
+      }
+    } catch (err) {
+      setError('Falha ao buscar membros.');
+      console.error(err);
+      setMember([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { member, loading, error, searchMember };
 }

@@ -1,7 +1,7 @@
 export default function Comunidade() {
     return (
         <div className="bg-gradient-to-br from-red-50/50 via-orange-50/50 to-red-50/50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-red-900/20 
-                          p-6 ml-40 mr-40 rounded-2xl shadow-lg border border-red-200 dark:border-red-800/50 
+                          p-6 mr-20 ml-20 rounded-2xl shadow-lg border border-red-200 dark:border-red-800/50 
                           hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out 
                           transform cursor-pointer relative overflow-hidden animate-pulse">
             <div className="text-center mb-4 relative z-10">

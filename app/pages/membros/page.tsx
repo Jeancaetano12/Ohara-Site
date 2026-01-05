@@ -1,52 +1,67 @@
+// page.tsx
 "use client";
-
-import { useMembers } from '../../_hooks/useMembers'; // Ajuste o caminho
-import MemberCard from '../../components/MemberCard'; // Ajuste o caminho
-import styles from '../../_styles/MemberCard.module.css'; // Reutilizando container ou criando um novo
+import { useState } from 'react';
+import { useMembers, useSearchMember } from '../../_hooks/useMembers';
+import MembersHeader from '@/app/components/MembersHeader';
+import MemberCard from '../../components/MemberCard';
 
 export default function MembrosPage() {
-  const { members, loading, error, page, setPage, totalPages } = useMembers();
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const { members, loading: loadingList, page, setPage, refresh: refreshList } = useMembers();
+  const { member: searchResults, loading: loadingSearch, searchMember } = useSearchMember();
+
+  const handleSearch = (name: string) => {
+    setSearchTerm(name);
+    setIsSearching(true);
+    searchMember(name);
+  };
+
+  const handleClear = () => {
+    setIsSearching(false);
+    setSearchTerm('');
+  };
+
+  const handleRefresh = () => {
+    if (isSearching && searchTerm) {
+      searchMember(searchTerm);
+    } else {
+      refreshList();
+    }
+  };
+
+  const displayMembers = isSearching ? searchResults : members;
+  const isLoading = isSearching ? loadingSearch : loadingList;
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 className="text-3xl font-bold mb-8 text-ohara-dark dark:text-white">
-        Membros da Comunidade
-      </h1>
+    <div className="min-h-screen bg-[var(--bg-color)]">
+      <MembersHeader 
+        onSearch={handleSearch}
+        onClear={handleClear}
+        onRefresh={handleRefresh}
+        currentPage={page}
+        onPageChange={setPage}
+        isSearching={isSearching}
+      />
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      {loading ? (
-        <p className="text-center text-gray-500">Carregando dados da comunidade...</p>
-      ) : (
-        // Grid Responsivo: 1 coluna no mobile, 2 no tablet, 3 ou 4 no desktop
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-          gap: '2rem' 
-        }}>
-          {members.map((member) => (
-            <MemberCard key={member.id} member={member} />
-          ))}
-        </div>
-      )}
-
-      {/* Controles de Paginação Simples */}
-      <div className="flex justify-center gap-4 mt-8">
-        <button 
-          onClick={() => setPage(page - 1)} 
-          disabled={page === 1}
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 disabled:opacity-50"
-        >
-          Anterior
-        </button>
-        <span className="self-center">Página {page}</span>
-        <button 
-          onClick={() => setPage(page + 1)} 
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800"
-        >
-          Próxima
-        </button>
-      </div>
+      <main className="p-0 max-w-[1200px] mx-auto">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-12 h-12 border-4 border-ohara-blue border-t-transparent rounded-full animate-spin mb-4" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-8">
+            {displayMembers.map((m) => (
+              <MemberCard key={m.id} member={m} />
+            ))}
+          </div>
+        )}
+        
+        {isSearching && displayMembers.length === 0 && !isLoading && (
+          <p className="text-center text-gray-500 py-10">Nenhum membro encontrado.</p>
+        )}
+      </main>
     </div>
   );
 }
