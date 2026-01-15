@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./components/Header";
 import { ThemeProvider } from "./ThemeContext";
+import { AuthProvider } from "../app/_context/AuthContext"
 
 export const metadata: Metadata = {
   title: "Comunidade Ohara",
@@ -18,10 +19,12 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className="antialiased bg-ohara-white dark:bg-ohara-dark text-ohara-dark dark:text-ohara-white transition-colors duration-300">
         <ThemeProvider>
-          <Header />
-          <main className="pt-8 min-h-screen">
-            {children}
-          </main>
+          <AuthProvider>
+            <Header />
+            <main className="pt-8 min-h-screen">
+              {children}
+            </main>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

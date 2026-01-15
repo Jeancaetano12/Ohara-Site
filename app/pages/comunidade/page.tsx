@@ -9,12 +9,12 @@ export default function Comunidade() {
                     <span className="text-2xl text-white">⚠️</span>
                 </div>
                 <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-2">
-                    Atenção
+                    Calma lá!
                 </h2>
             </div>
             <div className="relative z-10">
                 <p className="text-red-600 dark:text-red-300 mb-4 text-center leading-relaxed">
-                    Esta seção da comunidade está em construção.
+                    Esta parte ainda está em desenvolvimento.
                 </p>
             </div>
         </div>

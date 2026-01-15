@@ -32,7 +32,7 @@ export default function SearchBar({ onSearch, onClear }: SearchBarProps) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Busque pelo nick no servidor ou @ do discord"
+          placeholder="Busque pelo nick no servidor ou nome de usuario..."
           className="w-full px-4 py-2 pl-10 text-sm transition-all border rounded-lg bg-[var(--bg-color)] border-[var(--separator-color)] focus:outline-none focus:ring-2 focus:ring-ohara-pink focus:border-transparent dark:focus:ring-ohara-blue focus:border-transparent text-[var(--text-color)]"
         />
         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

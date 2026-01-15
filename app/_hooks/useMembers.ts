@@ -62,8 +62,6 @@ export function useMembers(initialPage = 1) {
 
         const data = await response.json();
         
-        // Ajuste aqui conforme o retorno exato do seu back-end. 
-        // Supondo que ele retorne { data: [], totalPages: 10 } ou headers de paginação
         console.log('Dados recebidos do back-end:', data);
         if (data.data && Array.isArray(data.data)) {
           setMembers(data.data);
@@ -73,9 +71,6 @@ export function useMembers(initialPage = 1) {
             setMembers([]);
             throw new Error('Formato de dados inesperado', data);
         }
-        
-        // Se o back-end não retorna o total de páginas no corpo, você pode precisar ajustar
-        // setTotalPages(data.totalPages || 1);
 
       } catch (err) {
         setError('Falha ao carregar lista de membros.');
@@ -97,7 +92,6 @@ export function useSearchMember() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Receba o nome diretamente na função de busca
   const searchMember = async (name: string) => { 
     if (!name || !name.trim()) return;
 
