@@ -21,7 +21,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <Header />
-            <main className="pt-8 min-h-screen">
+            <main className="min-h-screen">
               {children}
             </main>
           </AuthProvider>

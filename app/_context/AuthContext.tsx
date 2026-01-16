@@ -11,6 +11,7 @@ interface DecodedToken {
   discordId: string;
   globalName: string;
   avatarUrl: string;
+  serverNickName: string | null;
   serverAvatarUrl: string | null;
   exp: number; // Data de expiração padrão do JWT
 }

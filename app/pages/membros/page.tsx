@@ -37,7 +37,7 @@ export default function MembrosPage() {
   const isLoading = isSearching ? loadingSearch : loadingList;
 
   return (
-    <div className="min-h-screen bg-[var(--bg-color)]">
+    <div className="min-h-screen bg-(--bg-color)]">
       <MembersHeader 
         onSearch={handleSearch}
         onClear={handleClear}
@@ -47,7 +47,7 @@ export default function MembrosPage() {
         isSearching={isSearching}
       />
 
-      <main className="p-0 max-w-[1200px] mx-auto">
+      <main className="p-0 max-w-300 mx-auto">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-12 h-12 border-4 border-ohara-blue border-t-transparent rounded-full animate-spin mb-4" />
@@ -75,7 +75,7 @@ export default function MembrosPage() {
             </p>
             <button 
               onClick={handleClear}
-              className="px-6 py-2 border-2 border-ohara-pink text-ohara-pink dark:border-ohara-blue dark:text-ohara-blue font-bold rounded-lg hover:bg-ohara-pink hover:text-white dark:hover:bg-ohara-blue dark:hover:text-[#0f0518] transition"
+              className="px-6 py-2 border-2 border-ohara-pink text-ohara-pink dark:border-ohara-blue dark:text-ohara-blue font-bold rounded-lg hover:bg-ohara-pink hover:text-white dark:hover:bg-ohara-blue dark:hover:text-ohara-dark transition"
             >
               Limpar busca
             </button>
@@ -83,7 +83,7 @@ export default function MembrosPage() {
         ) : (
           <div className='grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-8'>
             {displayMembers.map((m) => (
-              <MemberCard key={m.id} member={m} />
+              <MemberCard key={m.discordId} member={m} />
             ))}
           </div>
         )}

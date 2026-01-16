@@ -24,7 +24,7 @@ export default function MembersHeader({
           </h1>
           <button 
             onClick={onRefresh}
-            className="p-2 rounded-full hover:bg-white/10 dark:hover:bg-white/10 text-ohara-pink dark:text-ohara-blue transition-transform hover:rotate-180 duration-500"
+            className="cursor-pointer p-2 rounded-full hover:bg-white/10 dark:hover:bg-white/10 text-ohara-pink dark:text-ohara-blue transition-transform hover:rotate-180 duration-500"
             title="Atualizar lista"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,14 +44,14 @@ export default function MembersHeader({
             <button 
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-md hover:bg-ohara-blue/20 disabled:opacity-30 transition-colors"
+              className="cursor-pointer p-1.5 rounded-md hover:bg-ohara-blue/20 disabled:opacity-30 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
             </button>
             <span className="text-sm font-mono px-2">PG {currentPage}</span>
             <button 
               onClick={() => onPageChange(currentPage + 1)}
-              className="p-1.5 rounded-md hover:bg-ohara-pink dark:hover:bg-ohara-blue/20 transition-colors"
+              className="cursor-pointer p-1.5 rounded-md hover:bg-ohara-pink dark:hover:bg-ohara-blue/20 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
             </button>

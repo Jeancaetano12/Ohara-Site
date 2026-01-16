@@ -44,7 +44,7 @@ export default function SearchBar({ onSearch, onClear }: SearchBarProps) {
           <button
             type="button"
             onClick={handleClear}
-            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-white"
+            className="cursor-pointer absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-white"
           >
             ✕
           </button>
@@ -54,7 +54,7 @@ export default function SearchBar({ onSearch, onClear }: SearchBarProps) {
       {/* Botão de confirmar pesquisa - Melhora UX Mobile */}
       <button
         type="submit"
-        className="px-3 py-2 border border-ohara-pink text-ohara-pink rounded-lg hover:bg-ohara-pink hover:text-white dark:border-ohara-blue/50 dark:text-ohara-blue rounded-lg dark:hover:bg-ohara-blue dark:hover:text-white transition-all text-sm font-bold"
+        className="cursor-pointer px-3 py-2 border border-ohara-pink text-ohara-pink rounded-lg hover:bg-ohara-pink hover:text-white dark:border-ohara-blue/50 dark:text-ohara-blue rounded-lg dark:hover:bg-ohara-blue dark:hover:text-white transition-all text-sm font-bold"
       >
         <span className="hidden md:inline">Buscar</span>
         <svg className="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,5 +1,6 @@
 // components/MemberCard.tsx
 import React from 'react';
+import Link from 'next/link';
 import { Member } from '../_hooks/useMembers';
 
 interface Props {
@@ -11,19 +12,21 @@ export default function MemberCard({ member }: Props) {
   
   const sortedRoles = [...member.roles].sort((a, b) => b.position - a.position);
 
-  const joinDate = new Date(member.joinedServerAt).toLocaleDateString('pt-BR', {
+  const updatedAt = new Date(member.updatedAt).toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'short',
     year: 'numeric'
-  });
+  });  
 
   return (
     /* Container Pai: Define o padding que será a largura da borda e esconde o transbordamento do gradiente */
-    <div className="group relative p-[2px] flex flex-col overflow-hidden transition-all duration-500 ease-out rounded-xl hover:-translate-y-2">
+    <Link 
+    href={`/pages/perfil/${member.discordId}`}
+    className=" cursor-pointer group relative p-0.5 flex flex-col overflow-hidden transition-all duration-500 ease-out rounded-xl hover:-translate-y-2">
       
       {/* Camada da Borda Infinita: Gira ao fundo e só aparece no hover */}
       <div 
-        className="absolute inset-[-100%] opacity-0 group-hover:opacity-100 animate-border-spin transition-opacity duration-500 pointer-events-none"
+        className="absolute -inset-full opacity-0 group-hover:opacity-100 animate-border-spin transition-opacity duration-500 pointer-events-none"
         style={{ 
           background: `conic-gradient(from 0deg, transparent 0%, ${userColor}, transparent 100%)` 
         }}
@@ -37,14 +40,14 @@ export default function MemberCard({ member }: Props) {
         
         {/* Banner Area */}
         <div 
-          className="relative w-full h-[130px] bg-center bg-cover"
+          className="relative w-full h-32.5 bg-center bg-cover"
           style={{ 
             backgroundImage: member.serverBannerUrl ? `url(${member.serverBannerUrl})` : member.bannerUrl ? `url(${member.bannerUrl})` : 'none',
             backgroundColor: (!member.serverBannerUrl && !member.bannerUrl) ? userColor : '#2d1b4e'
           }}
         >
           {/* Avatar Wrapper */}
-          <div className="absolute w-[90px] h-[90px] rounded-full border-[3px] border-[var(--bg-color)] left-5 -bottom-10 overflow-hidden bg-[var(--bg-color)]">
+          <div className="absolute w-22.5 h-22.5 rounded-full border-[3px] border-[var(--bg-color)] left-5 -bottom-10 overflow-hidden bg-[var(--bg-color)]">
             <img 
               src={member.serverAvatarUrl || member.avatarUrl} 
               alt={member.username} 
@@ -63,7 +66,7 @@ export default function MemberCard({ member }: Props) {
               {member.serverNickName || member.globalName || member.username}
             </span>
             <span className="font-mono text-sm text-gray-500">
-              @{member.username}
+              {member.username}
             </span>
           </div>
 
@@ -83,12 +86,12 @@ export default function MemberCard({ member }: Props) {
               </span>
             ))}
           </div>
-          
-          <div className="pt-4 mt-auto text-xs text-gray-600 border-t border-[var(--separator-color)]">
-            Membro desde {joinDate}
+
+          <div className="flex justify-between pt-4 mt-auto text-xs text-gray-600 border-t border-[var(--separator-color)]">
+            <span>Atualizado em: {updatedAt}</span>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -81,7 +81,7 @@ export default function Header() {
           <div className="flex items-center gap-4 justify-self-end">
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300 hover:rotate-12"
+              className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300 hover:rotate-12"
             >
               {isDarkMode ? '🌙' : '☀️'}
             </button>
@@ -91,7 +91,7 @@ export default function Header() {
                 <div  
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   title={`Logado como: ${user.serverNickName || user.globalName} (Clique para sair)`}
-                  className="w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-cyan-400 to-purple-500 cursor-pointer hover:scale-110 transition-transform"
+                  className="w-12 h-12 rounded-full p-0.5 bg-linear-to-tr from-cyan-400 to-purple-500 cursor-pointer hover:scale-110 transition-transform"
                 >
                   <img src={user.serverAvatarUrl || user.avatarUrl} alt={user.serverNickName || user.globalName } className="w-full h-full object-cover rounded-full border-2 border-white dark:border-[#130b20]" />
                 </div>
@@ -118,7 +118,7 @@ export default function Header() {
             ) : (
               <button 
                 onClick={toggleLogin}
-                className="hidden md:flex items-center gap-2 px-6 py-2 border-2 border-ohara-pink text-ohara-pink dark:border-ohara-blue dark:text-ohara-blue font-bold text-sm rounded hover:bg-ohara-pink hover:text-white dark:hover:bg-ohara-blue dark:hover:text-[#0f0518] transition-all duration-300 group shadow-[0_0_10px_rgba(217,70,239,0.2)] dark:shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+                className="hidden md:flex items-center gap-2 px-6 py-2 border-2 border-ohara-pink text-ohara-pink dark:border-ohara-blue dark:text-ohara-blue font-bold text-sm rounded hover:bg-ohara-pink hover:text-white dark:hover:bg-ohara-blue dark:hover:text-ohara-dark transition-all duration-300 group shadow-[0_0_10px_rgba(217,70,239,0.2)] dark:shadow-[0_0_10px_rgba(6,182,212,0.2)]"
               >
                 <svg 
                   width="18" 

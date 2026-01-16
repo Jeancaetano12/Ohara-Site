@@ -11,7 +11,6 @@ export interface Role {
 }
 
 export interface Member {
-  id: string;
   discordId: string;
   username: string;
   globalName: string | null;
@@ -23,6 +22,7 @@ export interface Member {
   isBot: boolean;
   colorHex: string;
   joinedServerAt: string;
+  updatedAt: string;
   roles: Role[];
 }
 
