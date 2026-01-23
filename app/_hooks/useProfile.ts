@@ -77,7 +77,6 @@ export function useProfile(discordId: string) {
                 if (response.status === 404) throw new Error('Membro não encontrado.');
                 throw new Error('Erro ao carregar perfil.');
             }
-
             const data = await response.json();
             console.log('Fetched profile data:', data);
             setProfile(data);

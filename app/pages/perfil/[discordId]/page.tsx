@@ -4,161 +4,225 @@ import { useAuth } from '@/app/_context/AuthContext';
 import { useProfile } from '@/app/_hooks/useProfile';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { Share2, Edit3, Calendar, ShieldCheck, Info, Check } from 'lucide-react'; // Sugestão: use lucide-react para ícones
+import { useState } from 'react';
 
 export default function ProfilePage() {
     const params = useParams();
     const discordId = params.discordId as string;
-
-    // Dados do perfil
     const { profile, loading, error } = useProfile(discordId);
     const { user: loggedUser } = useAuth();
-
-    // Verifica se o perfil é do usuário logado
+    const [copied, setCopied] = useState(false);
     const isOwner = loggedUser?.discordId === profile?.discordId;
     const userColor = profile?.colorHex || '#8b5cf6';
 
+    const handleShare = async () => {
+        try {
+            await navigator.clipboard.writeText(window.location.href);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Falha ao copiar o link: ', err)
+        }
+    }
+
     if (loading) {
-        return <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-t-transparent border-ohara-blue rounded-full"></div></div>;
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <div className="animate-spin w-12 h-12 border-4 border-ohara-blue border-t-transparent rounded-full mb-4"></div>
+                <p className="text-ohara-blue animate-pulse font-medium">Carregando perfil...</p>
+            </div>
+        );
     }
 
     if (error || !profile) {
-        return <div className="text-center py-20 text-red-400">Perfil não encontrado.</div>;
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                <div className="bg-red-500/10 p-4 rounded-full mb-4">
+                    <Info className="w-12 h-12 text-red-500" />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Ops! Perfil não encontrado</h2>
+                <p className="text-gray-400 max-w-xs">O membro que você procura não existe ou a API está temporariamente fora do ar.</p>
+            </div>
+        );
     }
 
     return (
-        <div className="min-h-screen bg-[var(--bg-color)] pb-20">
-            {/* --- BANNER HEADER --- */}
-            <div 
-                className="relative w-full h-64 md:h-80 bg-cover bg-center"
-                style={{ 
-                    backgroundImage: profile.serverBannerUrl ? `url(${profile.serverBannerUrl})` : profile.bannerUrl ? `url(${profile.bannerUrl})` : 'none',
-                    backgroundColor: (!profile.serverBannerUrl && !profile.bannerUrl) ? userColor : '#1a1a1a'
-                }}
-            >
-                <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
+        <div className="min-h-screen bg-ohara-dark pb-20 selection:bg-ohara-pink/30">
+            {/* --- BANNER --- */}
+            <div className="relative w-full h-64 md:h-96 overflow-hidden bg-ohara-dark">
+                {/* Camada 1: Fundo com Desfoque (Garante que não fiquem espaços vazios e disfarça a baixa resolução) */}
+                <div className="absolute inset-0 scale-110 blur-3xl opacity-50 transition-all duration-700"
+                    style={{ 
+                        backgroundImage: profile.serverBannerUrl ? `url(${profile.serverBannerUrl})` : profile.bannerUrl ? `url(${profile.bannerUrl})` : 'none',
+                        backgroundColor: userColor,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                    }} 
+                />
+                {/* Camada 2: A Imagem Real (limitamos o upscale para não perder nitidez) */}
+                <div 
+                    className="absolute inset-0 bg-no-repeat bg-cover md:bg-contain bg-center transition-all duration-500"
+                    style={{ 
+                        backgroundImage: profile.serverBannerUrl ? `url(${profile.serverBannerUrl})` : profile.bannerUrl ? `url(${profile.bannerUrl})` : 'none',
+                    }}
+                />
+                {/* Camada 3: Overlay de Gradiente (Dá profundidade e melhora leitura do nome) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-ohara-dark via-ohara-dark/20 to-black/40"></div>
+                
+                {/* Detalhe de linha neon na base do banner */}
+                <div 
+                    className="absolute bottom-0 left-0 w-full h-[2px] opacity-50 shadow-[0_-2px_10px_rgba(255,255,255,0.3)]"
+                    style={{ backgroundColor: userColor }}
+                ></div>
+
             </div>
 
-            {/* --- CONTEÚDO PRINCIPAL --- */}
-            <main className="max-w-5xl mx-auto px-6 relative -mt-24 z-10">
+            {/* --- CONTEÚDO --- */}
+            <main className="max-w-6xl mx-auto px-4 relative -mt-16 md:-mt-24 z-10">
                 
-                {/* CABEÇALHO DO PERFIL */}
-                <div className="flex flex-col md:flex-row items-end md:items-end gap-6 mb-8">
-                    
-                    {/* Avatar Grande */}
-                    <div className="relative shrink-0">
-                        <div className="w-40 h-40 md:w-48 md:h-48 rounded-full border-4 border-[var(--bg-color)] overflow-hidden shadow-2xl bg-[var(--bg-color)]">
-                            <img 
-                                src={profile.serverAvatarUrl || profile.avatarUrl} 
-                                alt={profile.username} 
-                                className="w-full h-full object-cover"
-                            />
+                {/* CABEÇALHO INTEGRADO */}
+                <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-6 md:p-8 shadow-2xl">
+                    <div className="flex flex-col md:flex-row items-center md:items-end gap-6">
+                        
+                        {/* Avatar com Anel de Cor Dinâmica */}
+                        <div className="relative group">
+                            <div 
+                                className="w-36 h-36 md:w-52 md:h-52 rounded-full p-1.5 transition-all duration-500 shadow-[0_0_30px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_40px_var(--profile-color)]"
+                                style={{ background: `linear-gradient(50deg, ${userColor}, ${userColor})` }}
+                            >
+                                <img 
+                                    src={profile.serverAvatarUrl || profile.avatarUrl} 
+                                    alt={profile.username} 
+                                    className="w-full h-full object-cover rounded-full border-4 border-ohara-dark"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Informações e Ações */}
-                    <div className="flex-1 pb-4 flex flex-col md:flex-row justify-between items-end gap-4 w-full">
-                        <div>
-                            <h1 className="text-3xl md:text-4xl font-black text-white drop-shadow-lg" style={{ color: userColor }}>
-                                {profile.serverNickName || profile.globalName}
+                        {/* Nome e Badges */}
+                        <div className="flex-1 text-center md:text-left">
+                            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+                                {profile.serverNickName || profile.globalName || profile.username}
                             </h1>
-                            <p className="text-gray-300 font-mono text-lg">@{profile.username}</p>
-                            
-                            {/* Badges / Roles Principais */}
-                            <div className="flex flex-wrap gap-2 mt-3">
-                                {profile.roles.slice(0, 4).map(role => (
-                                    <span key={role.name} className="px-2 py-0.5 text-xs font-bold rounded border bg-black/40 backdrop-blur-md" 
-                                          style={{color: role.colorHex, borderColor: role.colorHex}}>
+                            <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
+                                {profile.roles.slice(0, 5).map(role => (
+                                    <span 
+                                        key={role.name} 
+                                        className="px-3 py-1 text-[10px] md:text-xs font-bold rounded-full border bg-black/40 backdrop-blur-sm transition-colors hover:bg-black/60"
+                                        style={{ color: role.colorHex, borderColor: `${role.colorHex}44` }}
+                                    >
                                         {role.name}
                                     </span>
                                 ))}
                             </div>
                         </div>
 
-                        {/* --- AQUI ESTÁ A LÓGICA DE EDIÇÃO --- */}
-                        <div className="flex gap-3">
+                        {/* Ações */}
+                        <div className="flex gap-3 w-full md:w-auto">
                             {isOwner && (
                                 <Link 
-                                    href="/pages/perfil/editar" // Você precisará criar essa rota futuramente
-                                    className="flex items-center gap-2 px-6 py-2 bg-ohara-pink/90 hover:bg-ohara-pink text-white font-bold rounded-lg transition-all shadow-lg hover:shadow-ohara-pink/50"
+                                    href="/pages/perfil/editar"
+                                    className="px-6 py-3 text-white font-bold rounded-2xl hover:scale-105 transition-all active:scale-95 flex items-center gap-2"
+                                    style={{
+                                        background: `linear-gradient(50deg, ${userColor}, ${userColor})`,
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.boxShadow = `0 0 10px ${userColor}`;
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.boxShadow = "none";
+                                    }}
                                 >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                    Editar Perfil
+                                    <Edit3 className="w-4 h-4" />
+                                    Editar
                                 </Link>
                             )}
-                            
-                            {/* Botão de Compartilhar (Para todos) */}
-                            <button className="p-2 bg-gray-800/80 text-white rounded-lg hover:bg-gray-700 transition">
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                            <button 
+                                onClick={handleShare}
+                                className={`cursor-pointer p-3 rounded-xl transition-all border flex items-center gap-2 ${
+                                    copied 
+                                    ? 'bg-green-500/20 border-green-500 text-green-500' 
+                                    : 'bg-white/10 border-white/10 text-white hover:bg-white/20'
+                                }`}
+                                title="Copiar link do perfil"
+                            >
+                                {copied ? (
+                                    <>
+                                        <Check className="w-5 h-5" />
+                                        <span className="text-xs font-bold md:hidden">Copiado!</span>
+                                    </>
+                                ) : (
+                                    <Share2 className="w-5 h-5" />
+                                )}
                             </button>
                         </div>
                     </div>
+
+                    {/* ESTATÍSTICAS RÁPIDAS (Desktop) */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/10">
+                        <StatBox 
+                            icon={<Calendar style={{ color: `${userColor}` }} />} 
+                            label="Entrou no servidor em" 
+                            value={new Date(profile.joinedServerAt).toLocaleDateString('pt-BR')} 
+                        />
+                        <StatBox 
+                            icon={<ShieldCheck style={{ color: `${userColor}` }} />} 
+                            label="Cargos no Discord" 
+                            value={`${profile.roles.length} Atribuições`} 
+                        />
+                    </div>
                 </div>
 
-                {/* GRID DE INFORMAÇÕES */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* CORPO DA PÁGINA */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
                     
-                    {/* Coluna Esquerda: Sobre */}
-                    <div className="md:col-span-2 space-y-6">
-                        {/* Box Bio */}
-                        <div className="bg-black/20 border border-[var(--separator-color)] rounded-xl p-6 backdrop-blur-sm">
-                            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                                <span className="text-2xl">📝</span> Sobre Mim
-                            </h2>
-                            <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-                                {profile.profile?.bio || "Nenhuma biografia disponível."}
+                    {/* Bio e Conteúdo */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <section className="bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-6">
+                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <span className="w-1.5 h-6 rounded-full" style={{background: `${userColor}`}}></span>
+                                Sobre Mim
+                            </h3>
+                            <p className="text-gray-400 leading-relaxed italic">
+                                {profile.profile?.bio || "Este membro prefere manter o mistério e ainda não escreveu uma descrição."}
                             </p>
-                        </div>
-
-                        {/* Conexões / Links */}
-                        <div className="bg-black/20 border border-[var(--separator-color)] rounded-xl p-6 backdrop-blur-sm">
-                            <h2 className="text-xl font-bold text-white mb-4">Conexões</h2>
-                            <div className="flex gap-4">
-                                {/* Exemplo de renderização de links se existirem */}
-                                {profile.profile?.socialLinks?.length ? (
-                                    profile.profile.socialLinks.map(link => (
-                                        <a key={link} href={link} target="_blank" className="text-ohara-blue hover:underline">{link}</a>
-                                    ))
-                                ) : (
-                                    <span className="text-gray-500 italic">Nenhuma conexão pública.</span>
-                                )}
-                            </div>
-                        </div>
+                        </section>
                     </div>
 
-                    {/* Coluna Direita: Detalhes do Servidor */}
-                    <div className="space-y-6">
-                        <div className="bg-black/20 border border-[var(--separator-color)] rounded-xl p-6 backdrop-blur-sm">
-                            <h2 className="text-xl font-bold text-white mb-4">Estatísticas</h2>
-                            <ul className="space-y-3 text-gray-300">
-                                <li className="flex justify-between">
-                                    <span>Entrou em:</span>
-                                    <span className="font-mono text-white">
-                                        {new Date(profile.joinedServerAt).toLocaleDateString('pt-BR')}
-                                    </span>
-                                </li>
-                                <li className="flex justify-between">
-                                    <span>Cargos:</span>
-                                    <span className="font-mono text-white">{profile.roles.length}</span>
-                                </li>
-                            </ul>
+                    {/* Sidebar: Detalhes */}
+                    <aside className="space-y-6">
+                        <section className="bg-white/5 border border-white/10 backdrop-blur-md rounded-3xl p-6">
+                            <h3 className="text-sm uppercase tracking-widest text-gray-500 font-bold mb-6">Todos os Cargos</h3>
+                            <div className="flex flex-wrap gap-2">
+                            {profile.roles.map(role => (
+                                <span 
+                                    key={role.name}
+                                    className="px-3 py-1.5 rounded-lg bg-black/40 text-[11px] font-bold border border-white/5 transition-transform hover:scale-105"
+                                    style={{ borderLeft: `3px solid ${role.colorHex}`, color: role.colorHex }}
+                                >
+                                    {role.name}
+                                </span>
+                            ))}
                         </div>
-                        
-                        {/* Lista completa de cargos */}
-                        <div className="bg-black/20 border border-[var(--separator-color)] rounded-xl p-6 backdrop-blur-sm">
-                            <h2 className="text-sm uppercase tracking-wider text-gray-500 font-bold mb-4">Todos os Cargos</h2>
-                            <div className="flex flex-wrap gap-1.5">
-                                {profile.roles.map(role => (
-                                    <span key={role.name} className="px-2 py-0.5 text-[10px] uppercase font-bold rounded border border-white/10 bg-black/40 text-gray-300"
-                                    style={{ borderLeft: `3px solid ${role.colorHex}` }}>
-                                        {role.name}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
+                        </section>
+                    </aside>
                 </div>
             </main>
         </div>
-    )
+    );
+}
+
+// Subcomponente para organizar as estatísticas
+function StatBox({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
+    return (
+        <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5">
+            <div className="p-2 bg-ohara-dark rounded-lg border border-white/5">
+                {icon}
+            </div>
+            <div>
+                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">{label}</p>
+                <p className="text-sm text-white font-mono">{value}</p>
+            </div>
+        </div>
+    );
 }

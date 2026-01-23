@@ -29,6 +29,7 @@ export default function AuthSuccessPage() {
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-2">Autenticando...</h2>
         <p>Estamos conectando você à Comunidade Ohara.</p>
+        <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-t-transparent border-ohara-blue rounded-full"></div></div>;
         {/* Você pode por um spinner/loading aqui */}
       </div>
     </div>

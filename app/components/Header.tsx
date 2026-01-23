@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
-import { useTheme } from '../ThemeContext';
+import { useTheme } from '../_context/ThemeContext';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../_context/AuthContext'
 import Link from 'next/link';
@@ -46,10 +46,7 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b transition-all duration-300 
-      bg-white/80 dark:bg-[#130b20]/80 backdrop-blur-md
-      border-gray-200 dark:border-[#2d1b4e]
-      shadow-sm dark:shadow-[0_4px_20px_rgba(0,243,255,0.15)]">
+    <header className="sticky top-0 z-50 w-full border-b transition-all duration-300 bg-white/80 dark:bg-[#130b20]/80 backdrop-blur-mdborder-gray-200 dark:border-[#2d1b4e] shadow-sm dark:shadow-[0_4px_20px_rgba(0,243,255,0.15)]">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20 md:grid md:grid-cols-3">
@@ -76,22 +73,25 @@ export default function Header() {
             <Link href="/pages/membros" className={navItemStyles('/pages/membros')}>Membros</Link>
             <Link href="/pages/comunidade" className={navItemStyles('/pages/comunidade')}>Comunidade</Link>
           </nav>
-
+          
           {/* Direita: Ações */}
           <div className="flex items-center gap-4 justify-self-end">
-            <button 
+            {/* BOTÃO DE TEMA */}
+
+            
+            {/*<button 
               onClick={toggleTheme}
               className="cursor-pointer p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-all duration-300 hover:rotate-12"
             >
               {isDarkMode ? '🌙' : '☀️'}
-            </button>
+            </button>*/}
 
             {user ? (
               <div className="relative">
                 <div  
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   title={`Logado como: ${user.serverNickName || user.globalName} (Clique para sair)`}
-                  className="w-12 h-12 rounded-full p-0.5 bg-linear-to-tr from-cyan-400 to-purple-500 cursor-pointer hover:scale-110 transition-transform"
+                  className="cursor-pointer w-12 h-12 rounded-full p-0.5 bg-linear-to-tr from-cyan-400 to-purple-500 cursor-pointer hover:scale-110 transition-transform"
                 >
                   <img src={user.serverAvatarUrl || user.avatarUrl} alt={user.serverNickName || user.globalName } className="w-full h-full object-cover rounded-full border-2 border-white dark:border-[#130b20]" />
                 </div>
@@ -108,7 +108,7 @@ export default function Header() {
                         const confirmLogout = window.confirm('Tem certeza que deseja sair?');
                         if (confirmLogout) logout(); 
                       }}
-                      className='w-full text-center px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-500/10 transition'
+                      className='cursor-pointer w-full text-center px-4 py-2 text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-500/10 transition'
                     >
                       Sair
                     </button>
@@ -118,7 +118,7 @@ export default function Header() {
             ) : (
               <button 
                 onClick={toggleLogin}
-                className="hidden md:flex items-center gap-2 px-6 py-2 border-2 border-ohara-pink text-ohara-pink dark:border-ohara-blue dark:text-ohara-blue font-bold text-sm rounded hover:bg-ohara-pink hover:text-white dark:hover:bg-ohara-blue dark:hover:text-ohara-dark transition-all duration-300 group shadow-[0_0_10px_rgba(217,70,239,0.2)] dark:shadow-[0_0_10px_rgba(6,182,212,0.2)]"
+                className="cursor-pointer hidden md:flex items-center gap-2 px-6 py-2 border-2 border-ohara-pink text-ohara-pink dark:border-ohara-blue dark:text-ohara-blue font-bold text-sm rounded hover:bg-ohara-pink hover:text-white dark:hover:bg-ohara-blue dark:hover:text-ohara-dark transition-all duration-300 group shadow-[0_0_10px_rgba(217,70,239,0.2)] dark:shadow-[0_0_10px_rgba(6,182,212,0.2)]"
               >
                 <svg 
                   width="18" 
