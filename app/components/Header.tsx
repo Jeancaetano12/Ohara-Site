@@ -91,7 +91,7 @@ export default function Header() {
                 <div  
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                   title={`Logado como: ${user.serverNickName || user.globalName} (Clique para sair)`}
-                  className="cursor-pointer w-12 h-12 rounded-full p-0.5 bg-linear-to-tr from-cyan-400 to-purple-500 cursor-pointer hover:scale-110 transition-transform"
+                  className="cursor-pointer w-12 h-12 rounded-full p-0.5 bg-linear-to-tr from-cyan-400 to-purple-500 hover:scale-110 transition-transform"
                 >
                   <img src={user.serverAvatarUrl || user.avatarUrl} alt={user.serverNickName || user.globalName } className="w-full h-full object-cover rounded-full border-2 border-white dark:border-[#130b20]" />
                 </div>

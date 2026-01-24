@@ -60,6 +60,40 @@ body {
   --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+@keyframes toast-in {
+  from {
+    transform: translate(50%, -20px); /* Ajuste para o transform de centralização */
+    opacity: 0;
+  }
+  to {
+    transform: translate(50%, 0);
+    opacity: 1;
+  }
+}
+
+/* Para Desktop (ajuste sem o translate central) */
+@media (min-width: 768px) {
+  @keyframes toast-in {
+    from {
+      transform: translateX(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes shrink { 
+  from { width: 100%; } 
+  to { width: 0%; } 
+}
+
 @keyframes border-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

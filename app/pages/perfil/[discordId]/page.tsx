@@ -3,22 +3,29 @@
 import { useAuth } from '@/app/_context/AuthContext';
 import { useProfile } from '@/app/_hooks/useProfile';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { Share2, Edit3, Calendar, ShieldCheck, Info, Check } from 'lucide-react'; // Sugestão: use lucide-react para ícones
+import { useNotification } from '@/app/_context/NotificationContext';
+import Toast  from '@/app/components/Toast';
+import { Share2, Edit3, Calendar, ShieldCheck, Info, Check } from 'lucide-react';
 import { useState } from 'react';
+import EditProfileModal from '@/app/components/EditProfileModal';
+import SocialIcon from '@/app/components/SocialIcons';
 
 export default function ProfilePage() {
+    const { notify } = useNotification();
     const params = useParams();
     const discordId = params.discordId as string;
-    const { profile, loading, error } = useProfile(discordId);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const { profile, loading, error, reload } = useProfile(discordId);
     const { user: loggedUser } = useAuth();
     const [copied, setCopied] = useState(false);
+    const [showToast, setShowToast] = useState<React.ReactNode>(null);
     const isOwner = loggedUser?.discordId === profile?.discordId;
     const userColor = profile?.colorHex || '#8b5cf6';
 
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(window.location.href);
+            notify("Link do perfil copiado!", "success", userColor);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
@@ -68,11 +75,11 @@ export default function ProfilePage() {
                     }}
                 />
                 {/* Camada 3: Overlay de Gradiente (Dá profundidade e melhora leitura do nome) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-ohara-dark via-ohara-dark/20 to-black/40"></div>
+                <div className="absolute inset-0 bg-linear-to-t from-ohara-dark via-ohara-dark/20 to-black/40"></div>
                 
                 {/* Detalhe de linha neon na base do banner */}
                 <div 
-                    className="absolute bottom-0 left-0 w-full h-[2px] opacity-50 shadow-[0_-2px_10px_rgba(255,255,255,0.3)]"
+                    className="absolute bottom-0 left-0 w-full h-0.5 opacity-50 shadow-[0_-2px_10px_rgba(255,255,255,0.3)]"
                     style={{ backgroundColor: userColor }}
                 ></div>
 
@@ -99,30 +106,46 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* Nome e Badges */}
+                        {/* Nome e Redes Sociais */}
                         <div className="flex-1 text-center md:text-left">
                             <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
                                 {profile.serverNickName || profile.globalName || profile.username}
                             </h1>
-                            <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
-                                {profile.roles.slice(0, 5).map(role => (
-                                    <span 
-                                        key={role.name} 
-                                        className="px-3 py-1 text-[10px] md:text-xs font-bold rounded-full border bg-black/40 backdrop-blur-sm transition-colors hover:bg-black/60"
-                                        style={{ color: role.colorHex, borderColor: `${role.colorHex}44` }}
-                                    >
-                                        {role.name}
-                                    </span>
-                                ))}
+                            {profile.isBot &&(
+                                <span className="bg-ohara-blue/20 text-ohara-blue text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider border border-ohara-blue/30">BOT</span>
+                            )}
+
+                            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-5">
+                                {profile.profile?.socialLinks && Object.entries(profile.profile.socialLinks).map(([platform, url]) => {
+                                    if (!url) return null;
+                                        return (
+                                            <a
+                                                key={platform}
+                                                href={url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="group relative p-3 bg-white/5 border border-white/10 rounded-2xl transition-all duration-300 hover:-translate-y-1 shadow-lg"
+                                                title={platform.charAt(0).toUpperCase() + platform.slice(1)}
+                                                style={{ borderColor: `${userColor}44`,
+                                                    ['--user-color' as any]: userColor,
+                                                }}
+                                            >
+                                                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity blur-md" style={{backgroundColor: 'var(--user-color)'}}/>
+                                                <div className="relative z-10 transition-transform group-hover:scale-110">
+                                                    <SocialIcon platform={platform} />
+                                                </div>
+                                            </a>
+                                        )}
+                                    )}    
                             </div>
                         </div>
 
                         {/* Ações */}
                         <div className="flex gap-3 w-full md:w-auto">
                             {isOwner && (
-                                <Link 
-                                    href="/pages/perfil/editar"
-                                    className="px-6 py-3 text-white font-bold rounded-2xl hover:scale-105 transition-all active:scale-95 flex items-center gap-2"
+                                <button 
+                                    onClick={() => setIsEditModalOpen(true)}
+                                    className="cursor-pointer px-6 py-3 text-white font-bold rounded-2xl hover:scale-105 transition-all active:scale-95 flex items-center gap-2"
                                     style={{
                                         background: `linear-gradient(50deg, ${userColor}, ${userColor})`,
                                     }}
@@ -135,7 +158,7 @@ export default function ProfilePage() {
                                 >
                                     <Edit3 className="w-4 h-4" />
                                     Editar
-                                </Link>
+                                </button>
                             )}
                             <button 
                                 onClick={handleShare}
@@ -149,12 +172,20 @@ export default function ProfilePage() {
                                 {copied ? (
                                     <>
                                         <Check className="w-5 h-5" />
-                                        <span className="text-xs font-bold md:hidden">Copiado!</span>
                                     </>
                                 ) : (
                                     <Share2 className="w-5 h-5" />
                                 )}
                             </button>
+
+                            {showToast && (
+                                <Toast 
+                                    message="Link do perfil copiado!" 
+                                    type="success" 
+                                    onClose={() => setShowToast(null)} 
+                                    color={userColor}
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -208,9 +239,20 @@ export default function ProfilePage() {
                     </aside>
                 </div>
             </main>
+
+            {isEditModalOpen && (
+                <EditProfileModal 
+                    profile={profile} 
+                    userColor={userColor}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onRefresh={reload}
+                />
+            )}
         </div>
     );
 }
+
+
 
 // Subcomponente para organizar as estatísticas
 function StatBox({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
