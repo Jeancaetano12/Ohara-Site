@@ -1,17 +1,15 @@
 // app/auth/success/page.tsx
 "use client";
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '../../_context/AuthContext';
 
-export default function AuthSuccessPage() {
+function AuthSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { login, user } = useAuth();
-
-  // Ref para garantir que o login so rode uma vez
-  const processedRef = useRef(false)
+  const processedRef = useRef(false);
 
   useEffect(() => {
     if (processedRef.current || user) return;
@@ -25,13 +23,22 @@ export default function AuthSuccessPage() {
   }, [searchParams, login, user, router]);
 
   return (
-    <div className="flex items-center justify-center h-screen bg-ohara-dark text-white">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Autenticando...</h2>
-        <p>Estamos conectando você à Comunidade Ohara.</p>
-        <div className="flex justify-center py-20"><div className="animate-spin w-10 h-10 border-4 border-t-transparent border-ohara-blue rounded-full"></div></div>;
-        {/* Você pode por um spinner/loading aqui */}
+    <div className="text-center">
+      <h2 className="text-2xl font-bold mb-2">Autenticando...</h2>
+      <p>Estamos conectando você à Comunidade Ohara.</p>
+      <div className="flex justify-center py-20">
+        <div className="animate-spin w-10 h-10 border-4 border-t-transparent border-ohara-blue rounded-full"></div>
       </div>
+    </div>
+  );
+}
+
+export default function AuthSuccessPage() {
+  return (
+    <div className="flex items-center justify-center h-screen bg-ohara-dark text-white">
+      <Suspense fallback={<p>Carregando...</p>}>
+        <AuthSuccessContent />
+      </Suspense>
     </div>
   );
 }

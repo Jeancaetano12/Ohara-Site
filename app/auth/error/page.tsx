@@ -1,16 +1,16 @@
 "use client";
+import { Suspense } from 'react'; // Importação necessária
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ShieldAlert, Home, MessageSquareShare, ArrowLeft } from 'lucide-react';
 
-export default function ErrorPage() {
+// 1. Criamos um componente interno para gerenciar a lógica dos params
+function ErrorContent() {
   const searchParams = useSearchParams();
   const reason = searchParams.get('reason');
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-      {/* Container Principal Glassmorphism */}
-      <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 max-w-2xl w-full text-center shadow-2xl relative overflow-hidden">
+    <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 max-w-2xl w-full text-center shadow-2xl relative overflow-hidden">
         
         {/* Detalhe de Brilho de Fundo */}
         <div className="absolute -top-24 -left-24 w-48 h-48 bg-ohara-pink/20 blur-[80px] rounded-full" />
@@ -61,12 +61,13 @@ export default function ErrorPage() {
             Voltar ao Início
           </button>
         </div>
+
         <div className="mt-10 pt-6 border-t border-white/5">
           <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
             <span className="text-gray-400 font-semibold"> Você ainda pode navegar pelo site livremente sem autenticação.</span>
           </p>
         </div>
-        {/* Link Sutil para tentar novamente */}
+
         <button 
           onClick={() => router.back()}
           className="cursor-pointer mt-8 text-gray-500 hover:text-ohara-pink text-sm font-medium flex items-center gap-2 transition-colors mx-auto"
@@ -75,6 +76,16 @@ export default function ErrorPage() {
           Tentar login novamente
         </button>
       </div>
+  );
+}
+
+// 2. O export default envolve o conteúdo no boundary de Suspense
+export default function ErrorPage() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+      <Suspense fallback={<div className="text-white">Carregando informações do erro...</div>}>
+        <ErrorContent />
+      </Suspense>
     </div>
   );
 }
