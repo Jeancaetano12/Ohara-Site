@@ -62,7 +62,6 @@ export function useMembers(initialPage = 1) {
 
         const data = await response.json();
         
-        console.log('Dados recebidos do back-end:', data);
         if (data.data && Array.isArray(data.data)) {
           setMembers(data.data);
         } else if (Array.isArray(data)) {
@@ -74,7 +73,6 @@ export function useMembers(initialPage = 1) {
 
       } catch (err) {
         setError('Falha ao carregar lista de membros.');
-        console.error(err);
         setMembers([]);
       } finally {
         setLoading(false);
@@ -108,7 +106,7 @@ export function useSearchMember() {
 
       if (!response.ok) throw new Error('Erro ao buscar membros');
       const data = await response.json();
-      console.log('Dados recebidos pela busca por nome:', data);
+
       if (data.data && Array.isArray(data.data)) {
         setMember(data.data);
       } else if (Array.isArray(data)) {
@@ -118,7 +116,6 @@ export function useSearchMember() {
       }
     } catch (err) {
       setError('Falha ao buscar membros.');
-      console.error(err);
       setMember([]);
     } finally {
       setLoading(false);
