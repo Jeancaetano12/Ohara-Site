@@ -14,7 +14,7 @@ export default function Home() {
         {/* Logo Grande Animada */}
         <div className="relative w-40 h-40 md:w-56 md:h-56 mb-8 hover:scale-105 transition-transform duration-500">
           <Image 
-            src="/OharaDiscordLogo.png" 
+            src="/ohara-icon.png" 
             alt="Árvore de Ohara" 
             fill 
             className="object-contain drop-shadow-2xl rounded-4xl border-2 border-ohara-pink/20 dark:border-ohara-white/10"
