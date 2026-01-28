@@ -24,7 +24,7 @@ export default function Toast({ message, type = 'success', onClose, duration = 3
   };
 
   return (
-    <div className="fixed top-10 right-1/2 translate-x-1/2 md:right-10 md:translate-x-0 z-100 animate-in fade-in slide-in-from-top-4 duration-300">
+    <div className="relative z-100 translate-x-1/2 md:translate-x-0 animate-in fade-in slide-in-from-top-4 duration-300">
         <div 
             className="bg-white/10 dark:bg-[#1b102d]/80 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-3 min-w-70"
             style={color ? { borderLeft: `4px solid ${color}`, boxShadow: `0 10px 30px -10px ${color}66` } : {}}

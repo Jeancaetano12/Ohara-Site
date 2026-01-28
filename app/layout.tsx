@@ -8,6 +8,9 @@ import { AuthProvider } from "../app/_context/AuthContext"
 export const metadata: Metadata = {
   title: "Comunidade Ohara",
   description: "Site oficial da comunidade Ohara",
+  icons: {
+    icon: "/ohara-icon.png",
+  },
 };
 
 export default function RootLayout({

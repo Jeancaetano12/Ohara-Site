@@ -27,27 +27,28 @@ export default function Home() {
           <span className="text-ohara-dark dark:text-ohara-white transition-colors">
             Bem-vindo à 
           </span>{" "}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-ohara-pink to-ohara-orange">
+          <span className="bg-clip-text text-transparent bg-linear-to-r from-ohara-pink to-ohara-orange">
             Ohara
           </span>
         </h1>
 
         <p className="text-lg md:text-xl max-w-2xl mx-auto mb-10 text-gray-700 dark:text-gray-300 transition-colors">
-          O refúgio do conhecimento. Uma comunidade focada em compartilhar sabedoria, 
-          pixel art e desenvolvimento.
+          Uma comunidade focada na interação e no entretenimento. 
         </p>
 
         {/* Botões de Ação */}
         <div className="flex flex-wrap gap-4 justify-center">
           <Link 
-            href="/pages/comunidade" 
+            href="https://discord.gg/3v2KFqySgt" 
             className="px-8 py-3 rounded-full bg-ohara-pink text-white font-bold text-lg shadow-lg shadow-ohara-pink/30 hover:shadow-ohara-pink/50 hover:scale-105 transition-all"
           >
-            Explorar Comunidade
+            Entrar no Discord
           </Link>
-          <button className="px-8 py-3 rounded-full border-2 border-ohara-dark/10 dark:border-ohara-white/20 hover:bg-ohara-dark/5 dark:hover:bg-ohara-white/10 transition-all font-semibold">
+          <Link className="cursor-pointer px-8 py-3 rounded-full border-2 border-ohara-dark/10 dark:border-ohara-white/20 hover:bg-ohara-dark/5 dark:hover:bg-ohara-white/10 transition-all font-semibold"
+            href="/pages/comunidade"
+          >
             Saiba Mais
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -60,9 +61,9 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-6">
           {/* Card 1 */}
           <FeatureCard 
-            title="Conhecimento" 
-            emoji="📚" 
-            desc="Artigos, tutoriais e discussões profundas sobre tecnologia e design."
+            title="Gente como a gente" 
+            emoji="🙋‍♀️" 
+            desc="Ache pessoas pra fechar aquele squad, ou jogar papo fora."
           />
           {/* Card 2 */}
           <FeatureCard 
@@ -72,9 +73,9 @@ export default function Home() {
           />
           {/* Card 3 */}
           <FeatureCard 
-            title="Projetos" 
+            title="Eventos" 
             emoji="🚀" 
-            desc="Showcase de projetos desenvolvidos pela comunidade e open source."
+            desc="Showcase de projetos desenvolvidos pela comunidade."
           />
         </div>
       </section>

@@ -62,11 +62,11 @@ body {
 
 @keyframes toast-in {
   from {
-    transform: translate(50%, -20px); /* Ajuste para o transform de centralização */
+    transform: translateY(-20px) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translate(50%, 0);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
 }

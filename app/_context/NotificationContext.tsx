@@ -23,7 +23,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   const notify = useCallback((message: string, type: ToastType = 'success', color?: string) => {
     const id = Date.now();
-    setNotifications((prev) => [...prev, { id, message, type, color }]);
+    setNotifications((prev) => [{ id, message, type, color }, ...prev]);
   }, []);
 
   const removeNotification = useCallback((id: number) => {

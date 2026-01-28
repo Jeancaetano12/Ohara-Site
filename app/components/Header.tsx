@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 import { useTheme } from '../_context/ThemeContext';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../_context/AuthContext'
 import Link from 'next/link';
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const pathname = usePathname();
   const { isDarkMode, toggleTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -18,7 +19,7 @@ export default function Header() {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const toggleLogin = () => {
-    window.location.href = 'http://localhost:3000/auth/discord';
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/discord`;
   }
 
   // Helper para links ativos
@@ -55,7 +56,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-3 group justify-self-start">
             <div className="relative">
               <Image
-                src="/OharaDiscordLogo.png"
+                src="/ohara-icon.png"
                 alt="Logo"
                 width={40}
                 height={40}
@@ -90,10 +91,10 @@ export default function Header() {
               <div className="relative">
                 <div  
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  title={`Logado como: ${user.serverNickName || user.globalName} (Clique para sair)`}
+                  title={`Logado como: ${user.serverNickName || user.globalName || user.username} (Clique para sair)`}
                   className="cursor-pointer w-12 h-12 rounded-full p-0.5 bg-linear-to-tr from-cyan-400 to-purple-500 hover:scale-110 transition-transform"
                 >
-                  <img src={user.serverAvatarUrl || user.avatarUrl} alt={user.serverNickName || user.globalName } className="w-full h-full object-cover rounded-full border-2 border-white dark:border-[#130b20]" />
+                  <img src={user.serverAvatarUrl || user.avatarUrl} alt={user.serverNickName || user.globalName || user.username} className="w-full h-full object-cover rounded-full border-2 border-white dark:border-[#130b20]" />
                 </div>
                 {isUserMenuOpen && (
                   <div className='absolute right-0 mt-3 w-48 rounded-lg bg-white dark:bg-[#1b102d] shadow-lg border border-gray-200 dark:border-cyan-900/30 z-50'>
@@ -103,6 +104,12 @@ export default function Header() {
                         {user.serverNickName || user.globalName}
                       </span>
                     </div>
+                    <button
+                      onClick={() => router.push(`/pages/perfil/${user.discordId}`)}
+                      className='cursor-pointer w-full text-center px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-cyan-900/30 transition'
+                    >
+                      Ver seu Perfil
+                    </button>
                     <button
                       onClick={() => {
                         const confirmLogout = window.confirm('Tem certeza que deseja sair?');
