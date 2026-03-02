@@ -2,15 +2,20 @@
 
 import { useAuth } from '@/app/_context/AuthContext';
 import { useProfile } from '@/app/_hooks/useProfile';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useNotification } from '@/app/_context/NotificationContext';
 import Toast  from '@/app/components/Toast';
 import { Share2, Edit3, Calendar, ShieldCheck, Info, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EditProfileModal from '@/app/components/EditProfileModal';
 import SocialIcon from '@/app/components/SocialIcons';
-
 export default function ProfilePage() {
+    const pathname = usePathname();
+
+    useEffect(() => {
+        window.scrollTo({top: 0, behavior: 'smooth' });
+    }, [pathname]);
+
     const { notify } = useNotification();
     const params = useParams();
     const discordId = params.discordId as string;
