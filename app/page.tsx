@@ -1,9 +1,17 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa";
 import { FaArrowDownLong } from "react-icons/fa6";
+import { IoMdArrowRoundForward } from "react-icons/io"; 
 
 export default function Home() {
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  }
 
   return (
     <div className="flex flex-col">
@@ -13,7 +21,7 @@ export default function Home() {
       ───────────────────────────────────────── */}
       <section
         id="hero"
-        className="relative flex flex-col items-center justify-center text-center min-h-screen px-4 overflow-hidden"
+        className="relative flex flex-col items-center justify-center text-center min-h-screen px-8 overflow-hidden"
       >
         {/* Background glows */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-ohara-pink/10 dark:bg-ohara-pink/5 blur-[150px] rounded-full pointer-events-none" />
@@ -54,23 +62,16 @@ export default function Home() {
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
-          <Link
-            href="https://discord.gg/3v2KFqySgt"
-            target="_blank"
-            className="px-8 py-3 rounded-full bg-ohara-pink text-white font-bold text-lg shadow-lg shadow-ohara-pink/30 hover:shadow-ohara-pink/50 hover:scale-105 transition-all"
-          >
-            Entrar no Discord
-          </Link>
           <a
-            href="#quem-somos"
-            className="px-8 py-3 rounded-full border-2 border-ohara-dark/10 dark:border-ohara-white/20 hover:bg-ohara-dark/5 dark:hover:bg-ohara-white/10 transition-all font-semibold text-ohara-dark dark:text-ohara-white"
+            className="cursor-pointer px-8 py-3 rounded-full border-2 border-ohara-dark/10 dark:border-ohara-white/20 hover:bg-ohara-dark/5 dark:hover:bg-ohara-white/10 transition-all font-semibold text-ohara-dark dark:text-ohara-white"
+            onClick={() => scrollToSection("quem-somos")}
           >
-            Saiba Mais ↓
+            Saiba Mais
           </a>
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2  animate-bounce">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2  animate-bounce">
           <FaArrowDownLong className="text-ohara-blue dark:text-ohara-blue" size={48} />
         </div>
       </section>
@@ -169,7 +170,8 @@ export default function Home() {
               href="/pages/comunidade"
               className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-gradient-to-r from-ohara-pink to-ohara-orange text-white font-bold text-lg shadow-lg hover:scale-105 transition-all"
             >
-              Explorar Comunidade →
+              Explorar Comunidade
+              <IoMdArrowRoundForward size={20} />
             </Link>
           </div>
         </div>

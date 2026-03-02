@@ -1,4 +1,15 @@
+"use client";
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+
+
+
 export default function Comunidade() {
+    const pathname = usePathname();
+    useEffect(() => {
+        window.scrollTo({top: 0, behavior: 'smooth' });
+    }, [pathname]);
+
     return (
         <div className="bg-linear-to-br from-red-50/50 via-orange-50/50 to-red-50/50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-red-900/20 
                           p-6 mr-20 ml-20 mt-20 rounded-2xl shadow-lg border border-red-200 dark:border-red-800/50 

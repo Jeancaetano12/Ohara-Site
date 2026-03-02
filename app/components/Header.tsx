@@ -15,11 +15,12 @@ function scrollToSection(id: string) {
   if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
 
+// 1. Adicionamos 'id', 'type' e 'href' para diferenciar navegação de página vs rolagem
 const NAV_LINKS = [
-  { label: 'Quem Somos', anchor: 'quem-somos' },
-  { label: 'Comunidade',  anchor: 'comunidade'  },
-  { label: 'Integração',  anchor: 'integracao'  },
-  { label: 'Junte-se',   anchor: 'junte-se'    },
+  { label: 'Quem Somos', id: 'quem-somos', type: 'anchor' },
+  { label: 'Comunidade',  id: 'comunidade', type: 'anchor'  },
+  { label: 'Integração',  id: 'integracao', type: 'anchor'  },
+  { label: 'Área do membro', id: 'area-membro', type: 'link', href: '/pages/comunidade' },
 ];
 
 export default function Header() {
@@ -32,15 +33,30 @@ export default function Header() {
   const [userMenuOpen,  setUserMenuOpen ] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [pillStyle,     setPillStyle    ] = useState({ left: 0, width: 0, opacity: 0 });
+  
   const menuRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
+  
   const isHome = pathname === '/';
+  const isAreaMembro = pathname.startsWith("/pages/comunidade");
 
-  /* ── Detecta seção ativa via IntersectionObserver ── */
+  /* ── Controle de Sessão Ativa por Rota ── */
+  useEffect(() => {
+    if (isAreaMembro) {
+      setActiveSection('area-membro');
+    } else if (isHome && activeSection === 'area-membro') {
+      setActiveSection('hero');
+    }
+  }, [pathname, isAreaMembro, isHome, activeSection]);
+
+  /* ── Detecta seção ativa via IntersectionObserver (apenas home) ── */
   useEffect(() => {
     if (!isHome) return;
-    const ids = ['hero', ...NAV_LINKS.map(l => l.anchor)];
+    
+    // Observa apenas as âncoras válidas na página
+    const ids = ['hero', ...NAV_LINKS.filter(l => l.type === 'anchor').map(l => l.id)];
     const obs: IntersectionObserver[] = [];
+    
     ids.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -68,18 +84,14 @@ export default function Header() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-  function handleClickOutside(event: MouseEvent) {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      setUserMenuOpen(false);
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
     }
-  }
-
-  document.addEventListener("mousedown", handleClickOutside);
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => { document.removeEventListener("mousedown", handleClickOutside); };
+  }, []);
 
   const toggleLogin = () => {
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/discord`;
@@ -88,6 +100,15 @@ export default function Header() {
   if (!mounted) {
     return <div className="h-16 bg-white dark:bg-ohara-dark border-b border-black/5 dark:border-white/5" />;
   }
+
+  // 2. Condicionais do gradiente da pill
+  const isOrangeGradient = activeSection === 'area-membro';
+  const pillBackground = isOrangeGradient
+    ? 'linear-gradient(135deg, var(--color-ohara-pink, #d946ef), var(--color-ohara-orange, #fb923c))'
+    : 'linear-gradient(135deg, var(--color-ohara-pink, #d946ef), var(--color-ohara-blue, #06b6d4))';
+  const pillShadow = isOrangeGradient
+    ? '0 0 14px 2px color-mix(in srgb, var(--color-ohara-orange, #fb923c) 40%, transparent)'
+    : '0 0 14px 2px color-mix(in srgb, var(--color-ohara-pink, #d946ef) 40%, transparent)';
 
   return (
     <header
@@ -127,25 +148,36 @@ export default function Header() {
               left:       pillStyle.left,
               width:      pillStyle.width,
               opacity:    pillStyle.opacity,
-              background: 'linear-gradient(135deg, var(--color-ohara-pink, #d946ef), var(--color-ohara-blue, #06b6d4))',
-              boxShadow:  '0 0 14px 2px color-mix(in srgb, var(--color-ohara-pink, #d946ef) 40%, transparent)',
+              background: pillBackground,
+              boxShadow:  pillShadow,
             }}
           />
 
-          {NAV_LINKS.map(({ label, anchor }) => {
-            const isActive = isHome && activeSection === anchor;
+          {NAV_LINKS.map(({ label, id, type, href }) => {
+            const isActive = activeSection === id;
             const cls = `
               relative z-10 px-4 py-1.5 text-sm font-semibold rounded-full transition-colors duration-200 cursor-pointer whitespace-nowrap
               ${isActive
                 ? 'text-white'
                 : 'text-gray-600 dark:text-gray-400 hover:text-ohara-dark dark:hover:text-ohara-white'}
             `;
+
+            // Renderiza o link externo para a área de membros
+            if (type === 'link') {
+              return (
+                <Link key={id} data-anchor={id} href={href!} className={cls}>
+                  {label}
+                </Link>
+              );
+            }
+
+            // Renderiza as âncoras
             return isHome ? (
-              <button key={anchor} data-anchor={anchor} onClick={() => scrollToSection(anchor)} className={cls}>
+              <button key={id} data-anchor={id} onClick={() => scrollToSection(id)} className={cls}>
                 {label}
               </button>
             ) : (
-              <Link key={anchor} data-anchor={anchor} href={`/#${anchor}`} className={cls}>
+              <Link key={id} data-anchor={id} href={`/#${id}`} className={cls}>
                 {label}
               </Link>
             );
@@ -173,6 +205,7 @@ export default function Header() {
                 </span>
                 <IoIosArrowDown className={`transition-transform duration-300 ${userMenuOpen ? "rotate-180" : "rotate-0"}`}/>
               </button>
+              
               {/* Menu do usuário */}
               {userMenuOpen && (
                 <div className={`absolute right-0 top-full mt-2 w-56 rounded-xl overflow-hidden bg-white dark:bg-[#1b102d] shadow-xl border border-gray-100 dark:border-white/10 z-50 transition-all duration-200 ease-out
@@ -239,23 +272,44 @@ export default function Header() {
       {/* ── MENU MOBILE ── */}
       <div className={`md:hidden overflow-hidden transition-all duration-300 bg-white/95 dark:bg-ohara-dark/95 backdrop-blur-xl border-t border-black/5 dark:border-white/5 ${mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
         <nav className="flex flex-col px-4 py-3 gap-1">
-          {NAV_LINKS.map(({ label, anchor }, i) => {
-            const isActive = isHome && activeSection === anchor;
-            const base = "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200";
+          {NAV_LINKS.map(({ label, id, type, href }, i) => {
+            const isActive = activeSection === id;
+            const isOrange = id === 'area-membro';
+            const bgGradient = isOrange
+              ? 'linear-gradient(135deg, var(--color-ohara-pink,#d946ef), var(--color-ohara-orange,#fb923c))'
+              : 'linear-gradient(135deg, var(--color-ohara-pink,#d946ef), var(--color-ohara-blue,#06b6d4))';
+
+            const base = "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left";
+            
+            if (type === 'link') {
+              return (
+                <Link
+                  key={id}
+                  href={href!}
+                  onClick={() => setMobileOpen(false)}
+                  className={`${base} ${isActive ? 'text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                  style={isActive ? { background: bgGradient } : {}}
+                >
+                  <span className="font-mono text-xs opacity-40">{String(i + 1).padStart(2, '0')}</span>
+                  {label}
+                </Link>
+              );
+            }
+
             return isHome ? (
               <button
-                key={anchor}
-                onClick={() => { scrollToSection(anchor); setMobileOpen(false); }}
-                className={`${base} w-full text-left ${isActive ? 'text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
-                style={isActive ? { background: 'linear-gradient(135deg, var(--color-ohara-pink,#d946ef), var(--color-ohara-orange,#fb923c))' } : {}}
+                key={id}
+                onClick={() => { scrollToSection(id); setMobileOpen(false); }}
+                className={`${base} ${isActive ? 'text-white' : 'text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5'}`}
+                style={isActive ? { background: bgGradient } : {}}
               >
                 <span className="font-mono text-xs opacity-40">{String(i + 1).padStart(2, '0')}</span>
                 {label}
               </button>
             ) : (
               <Link
-                key={anchor}
-                href={`/#${anchor}`}
+                key={id}
+                href={`/#${id}`}
                 onClick={() => setMobileOpen(false)}
                 className={`${base} text-gray-600 dark:text-gray-400 hover:bg-black/5 dark:hover:bg-white/5`}
               >
