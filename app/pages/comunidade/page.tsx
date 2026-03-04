@@ -1,23 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-
+import MembrosListing from '@/app/components/MembrosListing';
+import DocumentacaoListing from '@/app/components/DocumentacaoListing';
 // Placeholder components — será trabalhado separadamente
-function MembrosListing() {
-    return (
-        <div className="w-full rounded-2xl border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-sm p-10 text-center text-zinc-500 italic">
-            {/* Componente de listagem de perfis — em construção */}
-        </div>
-    );
-}
-
-function DocumentacaoListing() {
-    return (
-        <div className="w-full rounded-2xl border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-sm p-10 text-center text-zinc-500 italic">
-            {/* Componente de documentação — em construção */}
-        </div>
-    );
-}
 
 type ActiveView = 'membros' | 'documentacao' | null;
 
@@ -139,11 +125,11 @@ export default function Comunidade() {
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* Cabeçalho da seção */}
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/30">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-ohara-orange/15 border border-ohara-orange/30">
                                 <span className="text-sm">👤</span>
                             </div>
                             <h2 className="text-lg font-bold text-zinc-200 tracking-tight">Membros da Comunidade</h2>
-                            <span className="h-px flex-1 bg-gradient-to-r from-orange-500/30 to-transparent" />
+                            <span className="h-px flex-1 bg-gradient-to-r from-ohara-orange to-transparent" />
                         </div>
                         <MembrosListing />
                     </div>
@@ -154,11 +140,11 @@ export default function Comunidade() {
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                         {/* Cabeçalho da seção */}
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sky-500/15 border border-sky-500/30">
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-ohara-blue/15 border border-ohara-blue/30">
                                 <span className="text-sm">📋</span>
                             </div>
                             <h2 className="text-lg font-bold text-zinc-200 tracking-tight">Documentação do Servidor</h2>
-                            <span className="h-px flex-1 bg-gradient-to-r from-sky-500/30 to-transparent" />
+                            <span className="h-px flex-1 bg-gradient-to-r from-ohara-blue to-transparent" />
                         </div>
                         <DocumentacaoListing />
                     </div>

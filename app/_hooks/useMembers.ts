@@ -40,7 +40,7 @@ export function useMembers(initialPage = 1) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(initialPage);
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [refreshTick, setRefreshTick] = useState(0);
 
   const refresh = () => setRefreshTick(prev => prev + 1);
@@ -64,6 +64,9 @@ export function useMembers(initialPage = 1) {
         
         if (data.data && Array.isArray(data.data)) {
           setMembers(data.data);
+          if (data.meta?.totalPages !== undefined) {
+            setTotalPages(data.meta.totalPages);
+          }
         } else if (Array.isArray(data)) {
             setMembers(data);
         } else {
