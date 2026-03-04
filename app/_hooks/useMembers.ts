@@ -82,7 +82,7 @@ export function useMembers(initialPage = 1) {
     fetchMembers();
   }, [page, refreshTick]);
 
-  return { members, loading, error, setPage, page, totalPages, refresh };
+  return { members, loading, error, setPage, page, totalPages, refresh, setTotalPages };
 }
 
 export function useSearchMember() {

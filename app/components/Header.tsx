@@ -190,7 +190,7 @@ export default function Header() {
             <>
               <button
                 onClick={() => setUserMenuOpen((prev) => !prev)}
-                className="cursor-pointer flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:scale-105 active:scale-95 transition-all"
+                className="cursor-pointer flex items-center gap-3 px-3 py-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 hover:scale-102 active:scale-95 transition-all"
               >
                 <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-ohara-blue via-ohara-pink to-ohara-orange">
                   <img
