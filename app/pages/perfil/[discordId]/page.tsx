@@ -9,6 +9,7 @@ import { Share2, Edit3, Calendar, ShieldCheck, Info, Check } from 'lucide-react'
 import { useState, useEffect } from 'react';
 import EditProfileModal from '@/app/components/EditProfileModal';
 import SocialIcon from '@/app/components/SocialIcons';
+
 export default function ProfilePage() {
     const pathname = usePathname();
 
@@ -47,7 +48,19 @@ export default function ProfilePage() {
         );
     }
 
-    if (error || !profile) {
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                <div className="bg-red-500/10 p-4 rounded-full mb-4">
+                    <Info className="w-12 h-12 text-red-500" />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Ops! Perfil não encontrado</h2>
+                <p className="text-gray-400 max-w-xs">O membro que você procura não existe ou a API está temporariamente fora do ar.</p>
+            </div>
+        );
+    }
+
+    if (!profile) {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center px-4">
                 <div className="bg-red-500/10 p-4 rounded-full mb-4">

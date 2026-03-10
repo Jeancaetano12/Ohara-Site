@@ -60,13 +60,14 @@ export function useProfile(discordId: string) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchProfile = useCallback(async () => {
+    const fetchProfile = useCallback(async (signal?: AbortSignal) => {
         if (!discordId) return;
         
         setLoading(true);
         setError(null);
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${discordId}`, {
+                signal,                
                 headers: {
                     'Content-Type': 'application/json',
                     'x-site-key': process.env.NEXT_PUBLIC_SITE_KEY || ''
@@ -80,14 +81,19 @@ export function useProfile(discordId: string) {
             const data = await response.json();
             setProfile(data);
         } catch (err: any) {
+            if (err.name === 'AbortError') return;
             setError(err.message);
         } finally {
-            setLoading(false);
+            if (!signal?.aborted) {
+                setLoading(false);
+            }
         }
     }, [discordId]);
 
     useEffect(() => {
-        fetchProfile();
+        const controller = new AbortController();
+        fetchProfile(controller.signal);
+        return () => controller.abort();
     }, [fetchProfile]);
 
     return { profile, loading, error, reload: fetchProfile };

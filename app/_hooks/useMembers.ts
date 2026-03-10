@@ -26,14 +26,6 @@ export interface Member {
   roles: Role[];
 }
 
-interface UseMembersResponse {
-  members: Member[];
-  loading: boolean;
-  error: string | null;
-  totalPages: number;
-  setPage: (page: number) => void;
-  page: number;
-}
 
 export function useMembers(initialPage = 1) {
   const [members, setMembers] = useState<Member[]>([]);
@@ -46,11 +38,17 @@ export function useMembers(initialPage = 1) {
   const refresh = () => setRefreshTick(prev => prev + 1);
 
   useEffect(() => {
+    console.log("Hook useMembers montado para a página", initialPage);
+  },[]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
     const fetchMembers = async () => {
       setLoading(true);
-      setError(null);
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/membros?page=${page}&limit=10`, {
+          signal: controller.signal,
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -74,15 +72,19 @@ export function useMembers(initialPage = 1) {
             throw new Error('Formato de dados inesperado', data);
         }
 
-      } catch (err) {
-        setError('Falha ao carregar lista de membros.');
-        setMembers([]);
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          return;
+        }
+        console.error(err);
+        setError('Falha ao buscar lista de membros.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchMembers();
+    return () => controller.abort();
   }, [page, refreshTick]);
 
   return { members, loading, error, setPage, page, totalPages, refresh, setTotalPages };
