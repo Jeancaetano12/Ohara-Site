@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useAuth } from '../../_context/AuthContext';
+import { useAuth } from '@/app/_context/AuthContext';
 
 function AuthSuccessContent() {
   const searchParams = useSearchParams();

@@ -9,6 +9,7 @@ import { Share2, Edit3, Calendar, ShieldCheck, Info, Check } from 'lucide-react'
 import { useState, useEffect } from 'react';
 import EditProfileModal from '@/app/components/EditProfileModal';
 import SocialIcon from '@/app/components/SocialIcons';
+import { RiSpotifyLine } from "react-icons/ri";
 
 export default function ProfilePage() {
     const pathname = usePathname();
@@ -27,6 +28,15 @@ export default function ProfilePage() {
     const [showToast, setShowToast] = useState<React.ReactNode>(null);
     const isOwner = loggedUser?.discordId === profile?.discordId;
     const userColor = profile?.colorHex || '#8b5cf6';
+
+    const vincularSpotify = () => {
+        const token = localStorage.getItem('ohara-token');
+        if (!token) {
+            notify("Você precisa estar logado para vincular o Spotify.", "error");
+            return;
+        }
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/spotify?state=${token}`
+    }
 
     const handleShare = async () => {
         try {
@@ -178,6 +188,13 @@ export default function ProfilePage() {
                                     Editar
                                 </button>
                             )}
+                            <button
+                                onClick={vincularSpotify}
+                                className="cursor-pointer px-6 py-3 text-white font-bold rounded-2xl hover:scale-105 transition-all active:scale-95 flex items-center gap-2 bg-green-500/20 border border-green-500 text-green-500"
+                            >
+                                <RiSpotifyLine size={26} />
+                                Vincular Spotify
+                            </button>
                             <button 
                                 onClick={handleShare}
                                 className={`cursor-pointer p-3 rounded-xl transition-all border flex items-center gap-2 ${
