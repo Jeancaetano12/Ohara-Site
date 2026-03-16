@@ -79,6 +79,7 @@ export function useProfile(discordId: string) {
                 throw new Error('Erro ao carregar perfil.');
             }
             const data = await response.json();
+            console.log('Perfil carregado:', data);
             setProfile(data);
         } catch (err: any) {
             if (err.name === 'AbortError') return;

@@ -51,10 +51,6 @@ function MemberCard({ member }: { member: Member }) {
     const avatar = avatarSrc(member);
 
     return (
-        // FIX: O card agora tem altura fixa (h-fit com conteúdo fixo interno).
-        // O botão "Ver perfil" usa position:absolute na base do card, então
-        // ele desliza por cima do conteúdo sem alterar a altura do elemento —
-        // o que impedia o grid de redistribuir a altura de toda a linha.
         <div
             onClick={() => setSelected(s => !s)}
             className="group relative rounded-2xl border bg-zinc-900 overflow-hidden cursor-pointer

@@ -1,5 +1,5 @@
 // app/components/SocialIcon.tsx
-import { X, Save, Github, Instagram, Linkedin } from 'lucide-react';
+import { X, Github, Instagram, Linkedin } from 'lucide-react';
 import { SlSocialSpotify } from "react-icons/sl";
 import { ImSteam } from "react-icons/im";
 import { FaXTwitter } from "react-icons/fa6";
