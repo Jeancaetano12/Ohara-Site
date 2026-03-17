@@ -1,6 +1,6 @@
 "use client";
 import { useMembers, useSearchMember, Member } from "../_hooks/useMembers";
-import { useState, useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -44,32 +44,36 @@ function SkeletonCard() {
 // ─── Member Card ─────────────────────────────────────────────────────────────
 
 function MemberCard({ member }: { member: Member }) {
-    const [selected, setSelected] = useState(false);
     const accent = accentColor(member);
     const banner = bannerSrc(member);
     const name = displayName(member);
     const avatar = avatarSrc(member);
 
     return (
-        <div
-            onClick={() => setSelected(s => !s)}
-            className="group relative rounded-2xl border bg-zinc-900 overflow-hidden cursor-pointer
-                       transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        <Link
+            href={`/pages/perfil/${member.discordId}`}
+            className="group relative rounded-2xl border border-zinc-700/70 bg-zinc-900 overflow-hidden
+                       block transition-all duration-300 hover:-translate-y-1"
             style={{
-                borderColor: selected ? accent : "rgba(63,63,70,0.7)",
-                boxShadow: selected
-                    ? `0 0 0 1px ${accent}55, 0 8px 32px ${accent}22`
-                    : undefined,
+                // No hover o box-shadow e a borda acendem na cor do membro
+                // via variável CSS inline — sem estado React necessário
+                ['--accent' as string]: accent,
+            }}
+            onMouseEnter={e => {
+                const el = e.currentTarget;
+                el.style.borderColor = accent;
+                el.style.boxShadow = `0 0 0 1px ${accent}44, 0 8px 28px ${accent}1a`;
+            }}
+            onMouseLeave={e => {
+                const el = e.currentTarget;
+                el.style.borderColor = "rgba(63,63,70,0.7)";
+                el.style.boxShadow = "";
             }}
         >
             {/* Banner / colorHex fallback */}
             <div
                 className="relative h-24 w-full overflow-hidden"
-                style={
-                    !banner
-                        ? { background: `linear-gradient(135deg, ${accent}55 0%, ${accent}22 100%)` }
-                        : undefined
-                }
+                style={!banner ? { background: `linear-gradient(135deg, ${accent}55 0%, ${accent}22 100%)` } : undefined}
             >
                 {banner && (
                     <img
@@ -79,15 +83,16 @@ function MemberCard({ member }: { member: Member }) {
                     />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/80 via-zinc-900/10 to-transparent" />
+
+                {/* Linha de cor no topo — intensifica no hover via opacity */}
                 <div
-                    className="absolute top-0 left-0 right-0 h-[2px] transition-opacity duration-300"
-                    style={{ background: accent, opacity: selected ? 1 : 0.5 }}
+                    className="absolute top-0 left-0 right-0 h-[2px] opacity-40 transition-opacity duration-300 group-hover:opacity-100"
+                    style={{ background: accent }}
                 />
             </div>
 
-            {/* Corpo — padding-bottom generoso para que o botão absoluto
-                não cubra o texto quando aberto */}
-            <div className="px-4 pt-3 pb-5 relative">
+            {/* Avatar + info */}
+            <div className="px-4 pb-5 pt-3 relative">
                 <div
                     className="absolute -top-8 left-4 w-[58px] h-[58px] rounded-full border-[3px] border-zinc-900 overflow-hidden shadow-lg transition-transform duration-300 group-hover:scale-105"
                     style={{ boxShadow: `0 0 0 2px ${accent}88` }}
@@ -104,10 +109,7 @@ function MemberCard({ member }: { member: Member }) {
                 </div>
 
                 <div className="mt-7">
-                    <p
-                        className="font-bold text-sm leading-tight truncate transition-colors duration-200"
-                        style={{ color: selected ? accent : "#e4e4e7" }}
-                    >
+                    <p className="font-bold text-sm leading-tight truncate text-zinc-200 transition-colors duration-200 group-hover:text-white">
                         {name}
                     </p>
                     <p className="text-[11px] text-zinc-600 mt-0.5 font-mono">
@@ -115,39 +117,7 @@ function MemberCard({ member }: { member: Member }) {
                     </p>
                 </div>
             </div>
-
-            {/* Botão "Ver perfil" — posição absoluta na base do card.
-                Desliza de baixo para cima com max-height, sem empurrar
-                nenhum elemento do layout nem afetar os cards vizinhos. */}
-            <div
-                className="absolute bottom-0 left-0 right-0 overflow-hidden transition-all duration-300 ease-out"
-                style={{ maxHeight: selected ? "48px" : "0px" }}
-            >
-                <Link
-                    href={`/pages/perfil/${member.discordId}`}
-                    onClick={(e) => e.stopPropagation()}
-                    className="flex items-center justify-center gap-2 w-full py-3 text-xs font-semibold
-                               tracking-wide transition-opacity duration-200 active:scale-95"
-                    style={{
-                        background: `linear-gradient(to right, ${accent}40, ${accent}28)`,
-                        borderTop: `1px solid ${accent}44`,
-                        color: accent,
-                        opacity: selected ? 1 : 0,
-                    }}
-                >
-                    Ver perfil
-                    <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                        <path
-                            d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg>
-                </Link>
-            </div>
-        </div>
+        </Link>
     );
 }
 
@@ -177,7 +147,7 @@ function Pagination({
               ];
 
     return (
-        <div className="flex items-center justify-center gap-1.5 mt-8 flex-wrap">
+        <div className="flex items-center justify-center gap-1.5 mt-8">
             <button
                 disabled={page === 1}
                 onClick={() => onPageChange(page - 1)}
@@ -190,14 +160,12 @@ function Pagination({
 
             {visiblePages.map((p, i) =>
                 p === "…" ? (
-                    <span key={`ellipsis-${i}`} className="text-zinc-600 px-1 text-sm select-none">
-                        …
-                    </span>
+                    <span key={`ellipsis-${i}`} className="text-zinc-600 px-1 text-sm select-none">…</span>
                 ) : (
                     <button
                         key={p}
                         onClick={() => onPageChange(p as number)}
-                        className="w-8 h-8 rounded-lg text-xs font-mono transition-all duration-150 hover:text-zinc-200"
+                        className="w-8 h-8 rounded-lg text-xs font-mono transition-all duration-150"
                         style={
                             p === page
                                 ? { background: "#8b5cf622", border: "1px solid #8b5cf666", color: "#c4b5fd" }
@@ -266,10 +234,8 @@ export default function MembrosListing() {
                         className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none"
                         width="15" height="15" viewBox="0 0 15 15" fill="none"
                     >
-                        <path
-                            d="M10 6.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM9.44 9.854l3.353 3.353a1 1 0 0 0 1.414-1.414L10.854 8.44A5.5 5.5 0 1 0 9.44 9.854Z"
-                            fill="currentColor" fillRule="evenodd" clipRule="evenodd"
-                        />
+                        <path d="M10 6.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM9.44 9.854l3.353 3.353a1 1 0 0 0 1.414-1.414L10.854 8.44A5.5 5.5 0 1 0 9.44 9.854Z"
+                            fill="currentColor" fillRule="evenodd" clipRule="evenodd"/>
                     </svg>
 
                     <input
@@ -291,7 +257,7 @@ export default function MembrosListing() {
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
                         >
                             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                                <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                                <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
                             </svg>
                         </button>
                     )}
@@ -338,9 +304,7 @@ export default function MembrosListing() {
                 <div className="flex flex-col items-center gap-2 py-14 text-zinc-600">
                     <span className="text-3xl opacity-50">◈</span>
                     <p className="text-sm font-mono">
-                        {isSearchMode
-                            ? `Nenhum membro encontrado para "${query}"`
-                            : "Nenhum membro encontrado"}
+                        {isSearchMode ? `Nenhum membro encontrado para "${query}"` : "Nenhum membro encontrado"}
                     </p>
                 </div>
             )}
@@ -351,7 +315,7 @@ export default function MembrosListing() {
                     <p className="text-xs text-zinc-600 font-mono">
                         {isSearchMode
                             ? `${displayedMembers.length} resultado${displayedMembers.length !== 1 ? "s" : ""} para "${query}"`
-                            : `Página ${page} de ${totalPages} · ${displayedMembers.length} membros`}
+                            : `Página ${page} · ${displayedMembers.length} membros`}
                     </p>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
@@ -366,6 +330,7 @@ export default function MembrosListing() {
                             totalPages={totalPages}
                             onPageChange={(p) => {
                                 setPage(p);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
                             }}
                         />
                     )}
