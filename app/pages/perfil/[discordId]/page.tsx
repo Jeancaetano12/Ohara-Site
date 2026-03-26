@@ -80,8 +80,8 @@ export default function ProfilePage() {
                             backgroundImage: profile.serverBannerUrl
                                 ? `url(${profile.serverBannerUrl})`
                                 : profile.bannerUrl
-                                ? `url(${profile.bannerUrl})`
-                                : 'none',
+                                    ? `url(${profile.bannerUrl})`
+                                    : 'none',
                             backgroundColor: userColor,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
@@ -94,8 +94,8 @@ export default function ProfilePage() {
                             backgroundImage: profile.serverBannerUrl
                                 ? `url(${profile.serverBannerUrl})`
                                 : profile.bannerUrl
-                                ? `url(${profile.bannerUrl})`
-                                : 'none',
+                                    ? `url(${profile.bannerUrl})`
+                                    : 'none',
                         }}
                     />
                     {/* Camada 3: Gradiente de fusão */}
@@ -183,11 +183,10 @@ export default function ProfilePage() {
 
                                     <button
                                         onClick={handleShare}
-                                        className={`cursor-pointer p-2 rounded-xl transition-all border flex items-center gap-2 ${
-                                            copied
+                                        className={`cursor-pointer p-2 rounded-xl transition-all border flex items-center gap-2 ${copied
                                                 ? 'bg-green-500/20 border-green-500 text-green-500'
                                                 : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
-                                        }`}
+                                            }`}
                                         title="Copiar link do perfil"
                                     >
                                         {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
@@ -225,16 +224,15 @@ export default function ProfilePage() {
 
                     {/* Divisória */}
                     <div className="mb-5 h-px w-full opacity-20 rounded-full" style={{ backgroundColor: userColor }} />
-                    
+
                     <div className='min-h-[80px] mb-5'>
-                        <SteamProfile/>
+                        <SteamProfile />
                     </div>
 
                     <div className="mb-5 h-px w-full opacity-20 rounded-full" style={{ backgroundColor: userColor }} />
 
                     {/* Spotify — reservado para implementação futura */}
                     <div className="min-h-[80px] mb-5">
-                        Spotify
                         {/* Componente de integração com Spotify será implementado aqui */}
                         <SpotifyProfile />
                     </div>

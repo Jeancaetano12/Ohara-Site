@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import useSWR from 'swr';
+import { fetcher } from './fetcher';
 import { useProfile } from "./useProfile";
 
 export interface SpotifyProfileData {
@@ -39,70 +40,33 @@ export type SpotifyStatus =
 export function useSpotifyProfile(discordId: string) {
   const { profile, loading: profileLoading } = useProfile(discordId);
 
-  const [spotifyData, setSpotifyData] = useState<SpotifyData | null>(null);
-  const [status, setStatus] = useState<SpotifyStatus>("loading");
-  const [error, setError] = useState<string | null>(null);
-
   // Verifica se o membro tem o Spotify vinculado nas connections
   const hasSpotifyLinked =
     profile?.connections?.some((c) => c.provider === "spotify") ?? false;
 
-  const fetchSpotifyData = useCallback(
-    async (signal?: AbortSignal) => {
-      if (!discordId || !hasSpotifyLinked) return;
-
-      setStatus("fetching");
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users/${discordId}/spotify`,
-          {
-            signal,
-            headers: {
-              "Content-Type": "application/json",
-              "x-site-key": process.env.NEXT_PUBLIC_SITE_KEY || "",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Erro ao carregar dados do Spotify.");
-        }
-
-        const data: SpotifyData = await response.json();
-        setSpotifyData(data);
-        setStatus("success");
-      } catch (err: any) {
-        if (err.name === "AbortError") return;
-        setError(err.message);
-        setStatus("error");
-      }
-    },
-    [discordId, hasSpotifyLinked]
+  const { data: spotifyData, error: swrError, isLoading, mutate: fetchSpotifyData } = useSWR<SpotifyData>(
+    discordId && hasSpotifyLinked ? `/users/${discordId}/spotify` : null,
+    fetcher
   );
 
-  useEffect(() => {
-    // Ainda carregando o perfil base
-    if (profileLoading) {
-      setStatus("loading");
-      return;
-    }
+  let status: SpotifyStatus = "loading";
+  let error: string | null = null;
 
-    // Perfil carregado, mas sem Spotify vinculado
-    if (!hasSpotifyLinked) {
-      setStatus("not_linked");
-      return;
-    }
-
-    // Tem Spotify vinculado — busca os dados
-    const controller = new AbortController();
-    fetchSpotifyData(controller.signal);
-    return () => controller.abort();
-  }, [profileLoading, hasSpotifyLinked, fetchSpotifyData]);
+  if (profileLoading) {
+    status = "loading";
+  } else if (!hasSpotifyLinked) {
+    status = "not_linked";
+  } else if (isLoading) {
+    status = "fetching";
+  } else if (swrError) {
+    status = "error";
+    error = swrError.message;
+  } else if (spotifyData) {
+    status = "success";
+  }
 
   return {
-    spotifyData,
+    spotifyData: spotifyData ?? null,
     status,
     error,
     hasSpotifyLinked,

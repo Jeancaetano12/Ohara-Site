@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
+import useSWR from 'swr';
+import { fetcher } from './fetcher';
 
 export interface Role {
     name: string;
@@ -56,46 +57,15 @@ export interface MemberProfile {
 }
 
 export function useProfile(discordId: string) {
-    const [profile, setProfile] = useState<MemberProfile | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: profile, error, isLoading, mutate } = useSWR<MemberProfile>(
+        discordId ? `/users/${discordId}` : null,
+        fetcher
+    );
 
-    const fetchProfile = useCallback(async (signal?: AbortSignal) => {
-        if (!discordId) return;
-        
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${discordId}`, {
-                signal,                
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-site-key': process.env.NEXT_PUBLIC_SITE_KEY || ''
-                }
-            });
-
-            if (!response.ok) {
-                if (response.status === 404) throw new Error('Membro não encontrado.');
-                throw new Error('Erro ao carregar perfil.');
-            }
-            const data = await response.json();
-            console.log('Perfil carregado:', data);
-            setProfile(data);
-        } catch (err: any) {
-            if (err.name === 'AbortError') return;
-            setError(err.message);
-        } finally {
-            if (!signal?.aborted) {
-                setLoading(false);
-            }
-        }
-    }, [discordId]);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchProfile(controller.signal);
-        return () => controller.abort();
-    }, [fetchProfile]);
-
-    return { profile, loading, error, reload: fetchProfile };
+    return { 
+        profile: profile ?? null, 
+        loading: isLoading, 
+        error: error ? error.message : null, 
+        reload: mutate 
+    };
 }

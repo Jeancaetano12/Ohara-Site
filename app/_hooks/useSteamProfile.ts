@@ -1,5 +1,7 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
+import useSWR from 'swr';
+import { fetcher } from './fetcher';
 
 export interface SteamProfileData {
     steamId: string;
@@ -28,42 +30,13 @@ export interface SteamGamesResponse {
 }
 
 export function useSteamProfile(discordId: string) {
-    const [summary, setSummary] = useState<SteamSummary | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: summary, error: swrError, isLoading, mutate: fetchSummary } = useSWR<SteamSummary | null>(
+        discordId ? `/users/${discordId}/steam/summary` : null,
+        fetcher
+    );
 
-    const fetchSummary = useCallback(async () => {
-        console.log(`dicordId usado para summary: ${discordId}`)
-        if (!discordId) return;
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/users/${discordId}/steam/summary`,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-site-key": process.env.NEXT_PUBLIC_SITE_KEY || "",
-                    },
-                }
-            );
-            if (response.status === 404) {
-                setSummary(null);
-                return;
-            }
-            if (!response.ok) throw new Error("Erro ao buscar perfil Steam.");
-            const data: SteamSummary = await response.json();
-            setSummary(data);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    }, [discordId]);
-
-    useEffect(() => {
-        fetchSummary();
-    }, [fetchSummary]);
+    const loading = isLoading;
+    const error = swrError ? swrError.message : null;
 
     const fetchGames = useCallback(async (): Promise<SteamGamesResponse | null> => {
         try {
