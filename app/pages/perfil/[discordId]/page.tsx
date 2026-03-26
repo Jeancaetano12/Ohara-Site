@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import EditProfileModal from '@/app/components/EditProfileModal';
 import SocialIcon from '@/app/components/SocialIcons';
 import SpotifyProfile from '@/app/components/SpotifyProfile';
+import SteamProfile from '@/app/components/SteamProfile';
 
 export default function ProfilePage() {
     const pathname = usePathname();
@@ -224,9 +225,16 @@ export default function ProfilePage() {
 
                     {/* Divisória */}
                     <div className="mb-5 h-px w-full opacity-20 rounded-full" style={{ backgroundColor: userColor }} />
+                    
+                    <div className='min-h-[80px] mb-5'>
+                        <SteamProfile/>
+                    </div>
+
+                    <div className="mb-5 h-px w-full opacity-20 rounded-full" style={{ backgroundColor: userColor }} />
 
                     {/* Spotify — reservado para implementação futura */}
                     <div className="min-h-[80px] mb-5">
+                        Spotify
                         {/* Componente de integração com Spotify será implementado aqui */}
                         <SpotifyProfile />
                     </div>
