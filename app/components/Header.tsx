@@ -18,25 +18,25 @@ function scrollToSection(id: string) {
 // 1. Adicionamos 'id', 'type' e 'href' para diferenciar navegação de página vs rolagem
 const NAV_LINKS = [
   { label: 'Quem Somos', id: 'quem-somos', type: 'anchor' },
-  { label: 'Comunidade',  id: 'comunidade', type: 'anchor'  },
-  { label: 'Integração',  id: 'integracao', type: 'anchor'  },
+  { label: 'Comunidade', id: 'comunidade', type: 'anchor' },
+  { label: 'Integração', id: 'integracao', type: 'anchor' },
   { label: 'Área do membro', id: 'area-membro', type: 'link', href: '/pages/comunidade' },
 ];
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const router         = useRouter();
-  const pathname       = usePathname();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [mounted,       setMounted      ] = useState(false);
-  const [mobileOpen,    setMobileOpen   ] = useState(false);
-  const [userMenuOpen,  setUserMenuOpen ] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
-  const [pillStyle,     setPillStyle    ] = useState({ left: 0, width: 0, opacity: 0 });
-  
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+
   const menuRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
-  
+
   const isHome = pathname === '/';
   const isAreaMembro = pathname.startsWith("/pages/comunidade");
 
@@ -52,11 +52,11 @@ export default function Header() {
   /* ── Detecta seção ativa via IntersectionObserver (apenas home) ── */
   useEffect(() => {
     if (!isHome) return;
-    
+
     // Observa apenas as âncoras válidas na página
     const ids = ['hero', ...NAV_LINKS.filter(l => l.type === 'anchor').map(l => l.id)];
     const obs: IntersectionObserver[] = [];
-    
+
     ids.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
@@ -145,11 +145,11 @@ export default function Header() {
             aria-hidden
             className="absolute top-1.5 h-[calc(100%-12px)] rounded-full pointer-events-none transition-all duration-300 ease-[cubic-bezier(.4,0,.2,1)]"
             style={{
-              left:       pillStyle.left,
-              width:      pillStyle.width,
-              opacity:    pillStyle.opacity,
+              left: pillStyle.left,
+              width: pillStyle.width,
+              opacity: pillStyle.opacity,
               background: pillBackground,
-              boxShadow:  pillShadow,
+              boxShadow: pillShadow,
             }}
           />
 
@@ -203,15 +203,15 @@ export default function Header() {
                 <span className="hidden md:block font-semibold text-sm text-ohara-dark dark:text-ohara-white max-w-[120px] truncate">
                   {user.serverNickName || user.globalName || user.username}
                 </span>
-                <IoIosArrowDown className={`transition-transform duration-300 ${userMenuOpen ? "rotate-180" : "rotate-0"}`}/>
+                <IoIosArrowDown className={`transition-transform duration-300 ${userMenuOpen ? "rotate-180" : "rotate-0"}`} />
               </button>
-              
+
               {/* Menu do usuário */}
               {userMenuOpen && (
                 <div className={`absolute right-0 top-full mt-2 w-56 rounded-xl overflow-hidden bg-white dark:bg-[#1b102d] shadow-xl border border-gray-100 dark:border-white/10 z-50 transition-all duration-200 ease-out
                   ${userMenuOpen
-                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                  : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}`}
+                    ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                    : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}`}
                 >
                   <div className="px-4 py-3 text-xs text-ohara-dark dark:text-ohara-white border-b border-gray-100 dark:border-white/10">
                     {user.username}
@@ -219,15 +219,15 @@ export default function Header() {
                       {user.email}
                     </span>
                   </div>
-                  
+
                   <button
                     onClick={() => router.push(`/pages/perfil/${user.discordId}`)}
                     className="cursor-pointer w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition text-gray-700 dark:text-ohara-white"
                   >
-                   <BsPersonBoundingBox size={19} className="inline mr-2" /> 
+                    <BsPersonBoundingBox size={19} className="inline mr-2" />
                     Meu Perfil
                   </button>
-  
+
                   <button
                     onClick={() => {
                       if (window.confirm("Tem certeza que deseja sair?")) logout();
@@ -245,27 +245,17 @@ export default function Header() {
               onClick={toggleLogin}
               className="cursor-pointer flex items-center gap-2 px-5 py-2 rounded-full text-sm font-bold text-white hover:scale-105 hover:brightness-110 transition-all duration-300"
               style={{
-                  background:
-                    "linear-gradient(135deg, var(--color-ohara-pink, #d946ef), var(--color-ohara-blue, #06b6d4))",
-                  boxShadow:
-                    "0 0 18px 2px color-mix(in srgb, var(--color-ohara-pink, #d946ef) 35%, transparent)",
-                }}
+                background:
+                  "linear-gradient(135deg, var(--color-ohara-pink, #d946ef), var(--color-ohara-blue, #06b6d4))",
+                boxShadow:
+                  "0 0 18px 2px color-mix(in srgb, var(--color-ohara-pink, #d946ef) 35%, transparent)",
+              }}
             >
               <FaDiscord size={18} />
               Entrar
             </button>
           )}
 
-          {/* Hamburger */}
-          <button
-            className="md:hidden w-9 h-9 flex flex-col items-center justify-center gap-[5px]"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menu"
-          >
-            <span className={`block h-[2px] w-5 rounded-full bg-ohara-dark dark:bg-ohara-white transition-all duration-300 origin-center ${mobileOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
-            <span className={`block h-[2px] w-5 rounded-full bg-ohara-dark dark:bg-ohara-white transition-all duration-300 ${mobileOpen ? 'opacity-0 scale-x-0' : ''}`} />
-            <span className={`block h-[2px] w-5 rounded-full bg-ohara-dark dark:bg-ohara-white transition-all duration-300 origin-center ${mobileOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
-          </button>
         </div>
       </div>
 
@@ -280,7 +270,7 @@ export default function Header() {
               : 'linear-gradient(135deg, var(--color-ohara-pink,#d946ef), var(--color-ohara-blue,#06b6d4))';
 
             const base = "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 w-full text-left";
-            
+
             if (type === 'link') {
               return (
                 <Link

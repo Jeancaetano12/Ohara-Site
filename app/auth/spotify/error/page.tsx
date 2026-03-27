@@ -12,17 +12,17 @@ export default function SpotifyErrorPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 selection:bg-ohara-pink/30">
-      
+
       {/* Container Principal Glassmorphism */}
       <div className="bg-white/5 border border-white/10 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 max-w-3xl w-full text-center shadow-2xl relative overflow-hidden">
-        
+
         {/* Detalhe de Brilho de Fundo (Cores do Perfil) */}
         <div className="absolute -top-32 -left-32 w-64 h-64 bg-ohara-pink/20 blur-[100px] rounded-full" />
         <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-ohara-blue/20 blur-[100px] rounded-full" />
 
         {/* Visualização da Conexão com Erro (Centralizado) */}
         <div className="relative flex items-center justify-center gap-6 md:gap-12 mb-12">
-          
+
           {/* Logo da Ohara (Site) */}
           <div className="relative group">
             <div className="absolute inset-0 bg-ohara-pink blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
@@ -55,18 +55,18 @@ export default function SpotifyErrorPage() {
         <h1 className="text-3xl md:text-4xl font-black text-white mb-6 tracking-tighter uppercase drop-shadow-sm">
           Falha na Conexão com <span className="text-[#1DB954]">Spotify</span>
         </h1>
-        
+
         <div className="space-y-4 mb-12 max-w-xl mx-auto">
           <p className="text-gray-300 text-lg leading-relaxed">
-            Não conseguimos vincular sua conta do Spotify ao seu perfil da Ohara. Isso pode ocorrer se você negar/cancelar a autorização ou se houver um erro de comunicação.
+            Não estamos conseguindo vincular contas do spotify com nosso serviço no momento devido a uma limitação do próprio spotify.<p className="font-extrabold underline"> Esse recurso vai ser removido em breve.</p>
           </p>
           <p className="text-sm text-gray-500 italic">Nenhuma informação adicional foi registrada em nosso banco de dados.</p>
         </div>
 
         {/* Ações (Alinhado com o padrão de botões que criamos) */}
         <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-          
-          <button 
+
+          <button
             onClick={() => router.push(`/pages/perfil/${user?.discordId}`)}
             className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-10 py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-all hover:scale-105 active:scale-95"
           >
@@ -74,7 +74,7 @@ export default function SpotifyErrorPage() {
             Voltar para seu perfil
           </button>
 
-          <button 
+          <button
             onClick={() => router.back()}
             className="cursor-pointer w-full sm:w-auto flex items-center justify-center gap-2 px-10 py-4 text-ohara-dark font-black rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-ohara-blue/20"
             style={{ background: `linear-gradient(90deg, #1DB954, #1ED760)` }}
@@ -85,7 +85,7 @@ export default function SpotifyErrorPage() {
         </div>
 
         {/* Link Sutil para o Perfil (Como feedback visual) */}
-        <button 
+        <button
           onClick={() => router.push('/')}
           className="cursor-pointer mt-10 text-gray-500 hover:text-ohara-pink text-sm font-medium flex items-center gap-2 transition-colors mx-auto"
         >
