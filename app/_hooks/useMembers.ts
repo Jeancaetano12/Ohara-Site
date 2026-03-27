@@ -37,9 +37,10 @@ export function useMembers(initialPage = 1) {
 
   const refresh = () => setRefreshTick(prev => prev + 1);
 
-  useEffect(() => {
+  /* useEffect(() => {
     console.log("Hook useMembers montado para a página", initialPage);
   },[]);
+  */
 
   useEffect(() => {
     const controller = new AbortController();
@@ -59,17 +60,17 @@ export function useMembers(initialPage = 1) {
         if (!response.ok) throw new Error('Erro ao buscar membros');
 
         const data = await response.json();
-        
+
         if (data.data && Array.isArray(data.data)) {
           setMembers(data.data);
           if (data.meta?.totalPages !== undefined) {
             setTotalPages(data.meta.totalPages);
           }
         } else if (Array.isArray(data)) {
-            setMembers(data);
+          setMembers(data);
         } else {
-            setMembers([]);
-            throw new Error('Formato de dados inesperado', data);
+          setMembers([]);
+          throw new Error('Formato de dados inesperado', data);
         }
 
       } catch (err: any) {
@@ -95,7 +96,7 @@ export function useSearchMember() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchMember = async (name: string) => { 
+  const searchMember = async (name: string) => {
     if (!name || !name.trim()) return;
 
     setLoading(true);
