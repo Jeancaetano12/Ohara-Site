@@ -184,8 +184,8 @@ export default function ProfilePage() {
                                     <button
                                         onClick={handleShare}
                                         className={`cursor-pointer p-2 rounded-xl transition-all border flex items-center gap-2 ${copied
-                                                ? 'bg-green-500/20 border-green-500 text-green-500'
-                                                : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                                            ? 'bg-green-500/20 border-green-500 text-green-500'
+                                            : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
                                             }`}
                                         title="Copiar link do perfil"
                                     >
@@ -196,11 +196,23 @@ export default function ProfilePage() {
                         </div>
                     </div>
 
-                    {/* Bio — sem container, sem label, nada se vazia */}
+                    {/* Bio */}
                     {profile.profile?.bio && (
-                        <p className="text-gray-300 text-sm leading-relaxed mt-5 max-w-xl text-center md:text-left">
-                            {profile.profile.bio}
-                        </p>
+                        <div className="mt-8 relative max-w-2xl p-2 shadow-sm transition-all duration-300 hover:bg-white/4 hover:border-white/10 group">
+                            {/* Barra lateral sutíl com a cor do usuário (efeito neon/glow) */}
+                            <div
+                                className="absolute left-0 top-1/2 -translate-y-1/2 h-[70%] w-1 rounded-r-full transition-all duration-300 group-hover:h-[80%]"
+                                style={{
+                                    backgroundColor: userColor,
+                                    boxShadow: `0 0 12px ${userColor}60`
+                                }}
+                            />
+
+                            {/* Conteúdo da bio */}
+                            <p className="relative z-10 text-gray-300 text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap pl-3 text-center md:text-left">
+                                {profile.profile.bio}
+                            </p>
+                        </div>
                     )}
 
                     {/* Divisória */}
@@ -227,14 +239,6 @@ export default function ProfilePage() {
 
                     <div className='min-h-[80px] mb-5'>
                         <SteamProfile />
-                    </div>
-
-                    <div className="mb-5 h-px w-full opacity-20 rounded-full" style={{ backgroundColor: userColor }} />
-
-                    {/* Spotify — reservado para implementação futura */}
-                    <div className="min-h-[80px] mb-5">
-                        {/* Componente de integração com Spotify será implementado aqui */}
-                        <SpotifyProfile />
                     </div>
 
                     {/* Divisória */}

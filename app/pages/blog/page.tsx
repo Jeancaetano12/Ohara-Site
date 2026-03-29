@@ -1,11 +1,8 @@
 "use client";
 
-export default function DocumentacaoListing() {
-
-    return(
-        <div className="w-full rounded-2xl border border-zinc-700/50 bg-zinc-900/60 backdrop-blur-sm p-10 text-center text-zinc-500 italic">
-            {/* Componente de documentação — em construção */}
-            <div className="bg-linear-to-br from-red-50/50 via-orange-50/50 to-red-50/50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-red-900/20 
+export default function BlogPage() {
+    return (
+        <div className="bg-linear-to-br from-red-50/50 via-orange-50/50 to-red-50/50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-red-900/20 
                           p-6 mr-20 ml-20 mt-20 rounded-2xl shadow-lg border border-red-200 dark:border-red-800/50 
                           hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out 
                           transform relative overflow-hidden animate-pulse">
@@ -23,7 +20,5 @@ export default function DocumentacaoListing() {
                 </p>
             </div>
         </div>
-        </div>
-    ) 
-    
+    )
 }
