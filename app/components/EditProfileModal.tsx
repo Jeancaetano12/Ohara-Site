@@ -39,7 +39,7 @@ export default function EditProfileModal({ profile, onClose, onRefresh, userColo
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
                 method: 'PATCH',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
@@ -50,7 +50,7 @@ export default function EditProfileModal({ profile, onClose, onRefresh, userColo
                 throw new Error('Sessão Expirada.');
             }
             if (!response.ok) throw new Error('Falha ao atualizar perfil');
-            
+
             notify("Perfil atualizado com sucesso!", "success", userColor);
             onRefresh();
             onClose();
@@ -76,39 +76,41 @@ export default function EditProfileModal({ profile, onClose, onRefresh, userColo
                     {/* Campo Bio */}
                     <div>
                         <label className="block text-sm font-bold text-gray-400 uppercase mb-2">Sobre Mim</label>
-                        <textarea 
+                        <textarea
                             value={formData.bio}
-                            onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                             className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:outline-none focus:border-ohara-pink/50 transition-colors h-32 resize-none"
                             placeholder="Conte um pouco sobre você..."
+                            maxLength={80}
                         />
-                        <p className="text-right text-xs text-gray-500 mt-1">{formData.bio.length}/240</p>
+                        <p className="text-right text-xs text-gray-500 mt-1">{formData.bio.length}/80</p>
                     </div>
 
                     {/* Redes Sociais */}
                     <div>
                         <label className="block text-sm font-bold text-gray-400 uppercase mb-4">Perfis Sociais</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <SocialInput icon={<Github size={18}/>} label="GitHub" value={formData.socialLinks.github} 
+                            <SocialInput icon={<Github size={18} />} label="GitHub" value={formData.socialLinks.github}
                                 onChange={(val: string) => updateSocial('github', val)} onClear={() => updateSocial('github', '')} />
-                            <SocialInput icon={<Instagram size={18}/>} label="Instagram" value={formData.socialLinks.instagram} 
+                            <SocialInput icon={<Instagram size={18} />} label="Instagram" value={formData.socialLinks.instagram}
                                 onChange={(val: string) => updateSocial('instagram', val)} onClear={() => updateSocial('instagram', '')} />
-                            <SocialInput icon={<FaXTwitter size={18}/>} label="Twitter" value={formData.socialLinks.twitter} 
+                            <SocialInput icon={<FaXTwitter size={18} />} label="Twitter" value={formData.socialLinks.twitter}
                                 onChange={(val: string) => updateSocial('twitter', val)} onClear={() => updateSocial('twitter', '')} />
-                            <SocialInput icon={<Linkedin size={18}/>} label="LinkedIn" value={formData.socialLinks.linkedin}
+                            <SocialInput icon={<Linkedin size={18} />} label="LinkedIn" value={formData.socialLinks.linkedin}
                                 onChange={(val: string) => updateSocial('linkedin', val)} onClear={() => updateSocial('linkedin', '')} />
-                            <SocialInput icon={<ImSteam size={18}/>} label="Perfil Steam" value={formData.socialLinks.steam}
+                            <SocialInput icon={<ImSteam size={18} />} label="Perfil Steam" value={formData.socialLinks.steam}
                                 onChange={(val: string) => updateSocial('steam', val)} onClear={() => updateSocial('steam', '')} />
-                            <SocialInput icon={<SlSocialSpotify size={18}/>} label="Spotify" value={formData.socialLinks.spotify}
+                            <SocialInput icon={<SlSocialSpotify size={18} />} label="Spotify" value={formData.socialLinks.spotify}
                                 onChange={(val: string) => updateSocial('spotify', val)} onClear={() => updateSocial('spotify', '')} />
                         </div>
                     </div>
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={loading}
                         className="cursor-pointer w-full py-4 text-white font-black rounded-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        style={{ boxShadow: `0 0 20px ${userColor}80`,
+                        style={{
+                            boxShadow: `0 0 20px ${userColor}80`,
                             background: `linear-gradient(90deg, ${userColor}, ${userColor})`
                         }}
                         onMouseEnter={(e) => {
@@ -134,19 +136,19 @@ export default function EditProfileModal({ profile, onClose, onRefresh, userColo
 }
 
 // Helper para Inputs Sociais
-function SocialInput({ icon, label, value, onChange, onClear}: any) {
+function SocialInput({ icon, label, value, onChange, onClear }: any) {
     return (
         <div className="bg-white/5 border border-white/10 rounded-2xl p-3 flex items-center gap-3">
             <div className="text-gray-400">{icon}</div>
-            <input 
-                type="url" 
+            <input
+                type="url"
                 placeholder={`URL do ${label}`}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 className="bg-transparent border-none text-white text-sm w-full focus:outline-none"
             />
             {value && (
-                <button 
+                <button
                     type="button"
                     onClick={onClear}
                     className="cursor-pointer text-gray-500 hover:text-red-400 transition-colors p-1"

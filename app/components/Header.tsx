@@ -9,6 +9,7 @@ import { FaDiscord } from 'react-icons/fa';
 import { IoIosArrowDown } from "react-icons/io";
 import { BsPersonBoundingBox } from "react-icons/bs";
 import { MdOutlineLogout } from "react-icons/md";
+import { FaUserCog } from "react-icons/fa";
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id);
@@ -21,6 +22,7 @@ const NAV_LINKS = [
   { label: 'Comunidade', id: 'comunidade', type: 'anchor' },
   { label: 'Integração', id: 'integracao', type: 'anchor' },
   { label: 'Área do membro', id: 'area-membro', type: 'link', href: '/pages/comunidade' },
+  { label: 'Blog', id: 'blog', type: 'link', href: '/pages/blog' },
 ];
 
 export default function Header() {
@@ -39,15 +41,20 @@ export default function Header() {
 
   const isHome = pathname === '/';
   const isAreaMembro = pathname.startsWith("/pages/comunidade");
+  const isBlog = pathname.startsWith("/pages/blog");
 
   /* ── Controle de Sessão Ativa por Rota ── */
   useEffect(() => {
     if (isAreaMembro) {
       setActiveSection('area-membro');
+    } else if (isBlog) {
+      setActiveSection('blog');
     } else if (isHome && activeSection === 'area-membro') {
       setActiveSection('hero');
+    } else if (isHome && activeSection === 'blog') {
+      setActiveSection('blog');
     }
-  }, [pathname, isAreaMembro, isHome, activeSection]);
+  }, [pathname, isAreaMembro, isHome, activeSection, isBlog]);
 
   /* ── Detecta seção ativa via IntersectionObserver (apenas home) ── */
   useEffect(() => {
@@ -102,7 +109,7 @@ export default function Header() {
   }
 
   // 2. Condicionais do gradiente da pill
-  const isOrangeGradient = activeSection === 'area-membro';
+  const isOrangeGradient = activeSection === 'area-membro' || activeSection === 'blog';
   const pillBackground = isOrangeGradient
     ? 'linear-gradient(135deg, var(--color-ohara-pink, #d946ef), var(--color-ohara-orange, #fb923c))'
     : 'linear-gradient(135deg, var(--color-ohara-pink, #d946ef), var(--color-ohara-blue, #06b6d4))';
@@ -229,6 +236,14 @@ export default function Header() {
                   </button>
 
                   <button
+                    onClick={() => router.push(`/pages/configuracoes`)}
+                    className="cursor-pointer w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition text-gray-700 dark:text-ohara-white"
+                  >
+                    <FaUserCog size={19} className="inline mr-2" />
+                    Configurações
+                  </button>
+
+                  <button
                     onClick={() => {
                       if (window.confirm("Tem certeza que deseja sair?")) logout();
                     }}
@@ -264,7 +279,7 @@ export default function Header() {
         <nav className="flex flex-col px-4 py-3 gap-1">
           {NAV_LINKS.map(({ label, id, type, href }, i) => {
             const isActive = activeSection === id;
-            const isOrange = id === 'area-membro';
+            const isOrange = id === 'area-membro' || id === 'blog';
             const bgGradient = isOrange
               ? 'linear-gradient(135deg, var(--color-ohara-pink,#d946ef), var(--color-ohara-orange,#fb923c))'
               : 'linear-gradient(135deg, var(--color-ohara-pink,#d946ef), var(--color-ohara-blue,#06b6d4))';
