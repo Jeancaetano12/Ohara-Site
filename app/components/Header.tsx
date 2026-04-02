@@ -9,7 +9,7 @@ import { FaDiscord } from 'react-icons/fa';
 import { IoIosArrowDown } from "react-icons/io";
 import { BsPersonBoundingBox } from "react-icons/bs";
 import { MdOutlineLogout } from "react-icons/md";
-import { LuLayoutDashboard } from "react-icons/lu";
+import { FaUserCog } from "react-icons/fa";
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id);
@@ -228,18 +228,19 @@ export default function Header() {
                   </div>
 
                   <button
-                    onClick={() => router.push(`/pages/dashboard`)}
-                    className="cursor-pointer w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition text-gray-700 dark:text-ohara-white"
-                  >
-                    <LuLayoutDashboard size={19} className="inline mr-2" />
-                    Dashboard
-                  </button>
-                  <button
                     onClick={() => router.push(`/pages/perfil/${user.discordId}`)}
                     className="cursor-pointer w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition text-gray-700 dark:text-ohara-white"
                   >
                     <BsPersonBoundingBox size={19} className="inline mr-2" />
                     Meu Perfil
+                  </button>
+
+                  <button
+                    onClick={() => router.push(`/pages/configuracoes`)}
+                    className="cursor-pointer w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-white/5 transition text-gray-700 dark:text-ohara-white"
+                  >
+                    <FaUserCog size={19} className="inline mr-2" />
+                    Configurações
                   </button>
 
                   <button

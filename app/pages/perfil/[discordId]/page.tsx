@@ -9,7 +9,6 @@ import { Share2, Edit3, Calendar, ShieldCheck, Info, Check } from 'lucide-react'
 import { useState, useEffect } from 'react';
 import EditProfileModal from '@/app/components/EditProfileModal';
 import SocialIcon from '@/app/components/SocialIcons';
-import SpotifyProfile from '@/app/components/SpotifyProfile';
 import SteamProfile from '@/app/components/SteamProfile';
 
 export default function ProfilePage() {
