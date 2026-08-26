@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { useAuth } from '../_context/AuthContext';
+import { api } from '../_hooks/fetcher';
 import { X, Save, Github, Instagram, Linkedin, Loader2 } from 'lucide-react';
 import { SlSocialSpotify } from "react-icons/sl";
 import { ImSteam } from "react-icons/im";
@@ -8,7 +9,6 @@ import { FaXTwitter } from "react-icons/fa6";
 import { useNotification } from '../_context/NotificationContext';
 
 export default function EditProfileModal({ profile, onClose, onRefresh, userColor }: any) {
-    const token = localStorage.getItem('ohara-token');
     const { notify } = useNotification();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -37,26 +37,17 @@ export default function EditProfileModal({ profile, onClose, onRefresh, userColo
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-            if (response.status === 401) {
-                useAuth().expire();
-                throw new Error('Sessão Expirada.');
-            }
-            if (!response.ok) throw new Error('Falha ao atualizar perfil');
-
+            await api.patch(`/users/me`, formData);
             notify("Perfil atualizado com sucesso!", "success", userColor);
             onRefresh();
             onClose();
-        } catch (err) {
-            console.error(err);
-            notify("Erro ao salvar alterações.", "error");
+        } catch (err: any) {
+            if (err.response?.status === 401) {
+                useAuth().expire();
+            } else {
+                console.error(err);
+                notify("Erro ao salvar alterações.", "error");
+            }
         } finally {
             setLoading(false);
         }

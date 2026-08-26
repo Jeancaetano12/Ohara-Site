@@ -19,13 +19,13 @@ export default function SpotifyProfile() {
   const isOwner = loggedUser?.discordId === profile?.discordId;
 
   const vincularSpotify = () => {
-    const token = localStorage.getItem("ohara-token");
-    if (!token) {
+    if (!loggedUser) {
       notify("Você precisa estar logado para vincular o Spotify.", "error");
       window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/discord`;
       return;
     }
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/spotify?state=${token}`;
+    // Agora o backend pega a sessão via cookie, não precisamos enviar token
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/spotify`;
   };
 
   /* ─── Loading / Fetching skeleton ─── */

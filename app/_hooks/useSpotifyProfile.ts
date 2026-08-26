@@ -1,6 +1,6 @@
 "use client";
-import useSWR from 'swr';
-import { fetcher } from './fetcher';
+import { useState, useEffect, useCallback } from 'react';
+import { api } from './fetcher';
 import { useProfile } from "./useProfile";
 
 export interface SpotifyProfileData {
@@ -39,15 +39,37 @@ export type SpotifyStatus =
 
 export function useSpotifyProfile(discordId: string) {
   const { profile, loading: profileLoading } = useProfile(discordId);
+  const [spotifyData, setSpotifyData] = useState<SpotifyData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [swrError, setSwrError] = useState<Error | null>(null);
 
-  // Verifica se o membro tem o Spotify vinculado nas connections
   const hasSpotifyLinked =
     profile?.connections?.some((c) => c.provider === "spotify") ?? false;
 
-  const { data: spotifyData, error: swrError, isLoading, mutate: fetchSpotifyData } = useSWR<SpotifyData>(
-    discordId && hasSpotifyLinked ? `/users/${discordId}/spotify` : null,
-    fetcher
-  );
+  const fetchSpotifyData = useCallback(async () => {
+    if (!discordId || !hasSpotifyLinked) {
+      setSpotifyData(null);
+      return;
+    }
+    setIsLoading(true);
+    setSwrError(null);
+    try {
+      const response = await api.get(`/users/${discordId}/spotify`);
+      setSpotifyData(response.data);
+    } catch (err: any) {
+      if (err.response?.status === 404) {
+        setSpotifyData(null);
+      } else {
+        setSwrError(err instanceof Error ? err : new Error(err.message || "Erro ao buscar Spotify"));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [discordId, hasSpotifyLinked]);
+
+  useEffect(() => {
+    fetchSpotifyData();
+  }, [fetchSpotifyData]);
 
   let status: SpotifyStatus = "loading";
   let error: string | null = null;

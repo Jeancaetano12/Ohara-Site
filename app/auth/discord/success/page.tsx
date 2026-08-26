@@ -1,26 +1,19 @@
-// app/auth/success/page.tsx
+// app/auth/discord/success/page.tsx
 "use client";
 
 import { useEffect, useRef, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/_context/AuthContext';
 
 function AuthSuccessContent() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
   const { login, user } = useAuth();
   const processedRef = useRef(false);
 
   useEffect(() => {
     if (processedRef.current || user) return;
-    const token = searchParams.get('token');
-    if (token) {
-      processedRef.current = true;
-      login(token);
-    } else {
-      router.push('/');
-    }
-  }, [searchParams, login, user, router]);
+    processedRef.current = true;
+    // O cookie já foi setado pelo backend, apenas precisamos validar a sessão
+    login();
+  }, [login, user]);
 
   return (
     <div className="text-center">

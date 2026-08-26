@@ -2,26 +2,25 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
-import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'next/navigation';
 import { useNotification } from './NotificationContext';
+import { api } from '../_hooks/fetcher';
 
-// O formato exato do payload que seu Back-end envia
 interface DecodedToken {
   sub: string;
   discordId: string;
-  globalName: string;
+  globalName: string | null;
   avatarUrl: string;
   username: string;
-  email: string;
+  email?: string;
   serverNickName: string | null;
   serverAvatarUrl: string | null;
-  exp: number; // Data de expiração padrão do JWT
 }
 
 interface AuthContextType {
   user: DecodedToken | null;
-  login: (token: string) => void;
+  login: () => void;
+  checkAuth: (redirectOnSuccess?: boolean) => Promise<void>;
   logout: () => void;
   expire: () => void;
   isLoading: boolean;
@@ -35,48 +34,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    // Ao carregar a página, verifica se já tem token salvo
-    const storedToken = localStorage.getItem('ohara-token');
-    if (storedToken) {
-      try {
-        const decoded = jwtDecode<DecodedToken>(storedToken);
-        if (decoded.exp * 1000 < Date.now()) {
-          logout();
-        } else {
-          setUser(decoded);
+  const checkAuth = useCallback(async (redirectOnSuccess = false) => {
+    setIsLoading(true);
+    try {
+      const response = await api.get('/users/me');
+      const profile = response.data;
+      if (profile) {
+        setUser({
+          sub: profile.id,
+          discordId: profile.discordId,
+          globalName: profile.globalName,
+          avatarUrl: profile.avatarUrl,
+          username: profile.username,
+          email: profile.email,
+          serverNickName: profile.serverNickName,
+          serverAvatarUrl: profile.serverAvatarUrl,
+        });
+        if (redirectOnSuccess) {
+           router.push('/');
+           notify('Login realizado com sucesso!', 'success');
         }
-      } catch (error) {
-        console.error("Token inválido", error);
-        logout();
+      } else {
+        setUser(null);
       }
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  }, []);
+  }, [router, notify]);
 
-  const login = useCallback((token: string) => {
-    localStorage.setItem('ohara-token', token);
-    const decoded = jwtDecode<DecodedToken>(token);
-    setUser(decoded);
-    router.push('/');
-    notify('Login realizado com sucesso!', 'success');
-  }, [router]);
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('ohara-token');
+  const login = useCallback(async () => {
+    await checkAuth(true);
+  }, [checkAuth]);
+
+  const logout = useCallback(async () => {
+    try {
+        await api.post('/auth/logout'); 
+    } catch (e) { }
     setUser(null);
     router.push('/');
     notify('Você saiu da sua conta.', 'info');
-  }, [router]);
+  }, [router, notify]);
 
   const expire = useCallback(() => {
-    localStorage.removeItem('ohara-token');
     setUser(null);
     router.push('/');
     notify('Sessão expirada. Por favor, faça login novamente.', 'info');
-  }, [router]);
+  }, [router, notify]);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, expire, isLoading }}>
+    <AuthContext.Provider value={{ user, login, checkAuth, logout, expire, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
