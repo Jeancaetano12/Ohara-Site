@@ -1,6 +1,6 @@
 "use client";
-import useSWR from 'swr';
-import { fetcher } from './fetcher';
+import { useState, useEffect, useCallback } from 'react';
+import { api } from './fetcher';
 
 export interface Role {
     name: string;
@@ -11,31 +11,6 @@ export interface Role {
 export interface Connections {
     provider: string;
     providerId: string;
-}
-
-export interface Member {
-    discordId: string;
-    username: string;
-    globalName: string | null;
-    serverNickName: string | null;
-    avatarUrl: string;
-    serverAvatarUrl: string | null;
-    bannerUrl: string | null;
-    serverBannerUrl: string | null;
-    isBot: boolean;
-    colorHex: string;
-    joinedServerAt: string;
-    profile: ProfileData[];
-    updatedAt: string;
-    roles: Role[];
-    connections: Connections[];
-}
-
-export interface ProfileData {
-    bio: string | null;
-    socialLinks: string[] | null;
-    AvatarSite: string | null;
-    BannerSite: string | null;
 }
 
 export interface MemberProfile {
@@ -51,40 +26,86 @@ export interface MemberProfile {
     isBot: boolean;
     colorHex: string;
     joinedServerAt: string;
-    profile: ProfileData | null;
+    profile: {
+        bio: string | null;
+        socialLinks: string[] | null;
+        AvatarSite: string | null;
+        BannerSite: string | null;
+    } | null;
     updatedAt: string;
     roles: Role[];
     connections: Connections[];
 }
 
 export function useProfile(discordId: string) {
-    const { data: profile, error, isLoading, mutate } = useSWR<MemberProfile>(
-        discordId ? `/users/${discordId}` : null,
-        fetcher
-    );
-    console.log(profile)
+    const [profile, setProfile] = useState<MemberProfile | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchProfile = useCallback(async () => {
+        if (!discordId) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(`/users/${discordId}`);
+            setProfile(response.data);
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                setProfile(null);
+            } else {
+                setError(err.message || 'Erro ao buscar perfil');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [discordId]);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
+
     return {
-        profile: profile ?? null,
-        loading: isLoading,
-        error: error ? error.message : null,
-        reload: mutate
+        profile,
+        loading,
+        error,
+        reload: fetchProfile
     };
 }
 
-export function usePrivateProfile() {
-    // Pegamos o token para garantir que a requisição só aconteça se ele existir
-    const token = typeof window !== 'undefined' ? localStorage.getItem('ohara-token') : null;
+export function usePrivateProfile(isAuthenticated: boolean = true) {
+    const [profile, setProfile] = useState<MemberProfile | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    // Se não houver token, passamos `null` e o SWR não tentará fazer o fetch
-    const { data: profile, error, isLoading, mutate } = useSWR<MemberProfile>(
-        token ? `/users/me` : null,
-        fetcher
-    );
-    console.log(profile)
+    const fetchProfile = useCallback(async () => {
+        if (!isAuthenticated) {
+            setProfile(null);
+            return;
+        }
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(`/users/me`);
+            setProfile(response.data);
+        } catch (err: any) {
+            if (err.response?.status === 404 || err.response?.status === 401) {
+                setProfile(null);
+            } else {
+                setError(err.message || 'Erro ao buscar perfil privado');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [isAuthenticated]);
+
+    useEffect(() => {
+        fetchProfile();
+    }, [fetchProfile]);
+
     return {
-        profile: profile ?? null,
-        loading: isLoading,
-        error: error ? error.message : null,
-        reload: mutate
+        profile,
+        loading,
+        error,
+        reload: fetchProfile
     };
 }

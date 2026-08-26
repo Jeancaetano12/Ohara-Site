@@ -1,8 +1,7 @@
 // hooks/useMembers.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { api } from './fetcher';
 
-
-// --- Interfaces baseadas no seu JSON ---
 export interface Role {
   id: string;
   name: string;
@@ -26,7 +25,6 @@ export interface Member {
   roles: Role[];
 }
 
-
 export function useMembers(initialPage = 1) {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(false);
@@ -35,31 +33,20 @@ export function useMembers(initialPage = 1) {
   const [totalPages, setTotalPages] = useState(0);
   const [refreshTick, setRefreshTick] = useState(0);
 
-  const refresh = () => setRefreshTick(prev => prev + 1);
-
-  /* useEffect(() => {
-    console.log("Hook useMembers montado para a página", initialPage);
-  },[]);
-  */
+  const refresh = useCallback(() => setRefreshTick(prev => prev + 1), []);
 
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchMembers = async () => {
       setLoading(true);
+      setError(null);
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/membros?page=${page}&limit=10`, {
-          signal: controller.signal,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-site-key': process.env.NEXT_PUBLIC_SITE_KEY || ''
-          }
+        const response = await api.get(`/membros?page=${page}&limit=10`, {
+          signal: controller.signal
         });
 
-        if (!response.ok) throw new Error('Erro ao buscar membros');
-
-        const data = await response.json();
+        const data = response.data;
 
         if (data.data && Array.isArray(data.data)) {
           setMembers(data.data);
@@ -70,11 +57,11 @@ export function useMembers(initialPage = 1) {
           setMembers(data);
         } else {
           setMembers([]);
-          throw new Error('Formato de dados inesperado', data);
+          throw new Error('Formato de dados inesperado');
         }
 
       } catch (err: any) {
-        if (err.name === 'AbortError') {
+        if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') {
           return;
         }
         console.error(err);
@@ -102,16 +89,8 @@ export function useSearchMember() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/membros/search?name=${encodeURIComponent(name)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-site-key': process.env.NEXT_PUBLIC_SITE_KEY || ''
-        }
-      });
-
-      if (!response.ok) throw new Error('Erro ao buscar membros');
-      const data = await response.json();
+      const response = await api.get(`/membros/search?name=${encodeURIComponent(name)}`);
+      const data = response.data;
 
       if (data.data && Array.isArray(data.data)) {
         setMember(data.data);

@@ -1,7 +1,6 @@
 "use client";
-import { useCallback } from "react";
-import useSWR from 'swr';
-import { fetcher } from './fetcher';
+import { useState, useEffect, useCallback } from "react";
+import { api } from './fetcher';
 
 export interface SteamProfileData {
     steamId: string;
@@ -30,28 +29,39 @@ export interface SteamGamesResponse {
 }
 
 export function useSteamProfile(discordId: string) {
-    const { data: summary, error: swrError, isLoading, mutate: fetchSummary } = useSWR<SteamSummary | null>(
-        discordId ? `/users/${discordId}/steam/summary` : null,
-        fetcher
-    );
+    const [summary, setSummary] = useState<SteamSummary | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const loading = isLoading;
-    const error = swrError ? swrError.message : null;
+    const fetchSummary = useCallback(async () => {
+        if (!discordId) {
+            setSummary(null);
+            return;
+        }
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await api.get(`/users/${discordId}/steam/summary`);
+            setSummary(response.data);
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                setSummary(null);
+            } else {
+                setError(err.message || "Erro ao buscar sumário da Steam");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [discordId]);
+
+    useEffect(() => {
+        fetchSummary();
+    }, [fetchSummary]);
 
     const fetchGames = useCallback(async (): Promise<SteamGamesResponse | null> => {
         try {
-            const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/users/${discordId}/steam/games`,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-site-key": process.env.NEXT_PUBLIC_SITE_KEY || "",
-                    },
-                }
-            );
-            console.log(`DiscordId enviado no fetchGames ${discordId}`)
-            if (!response.ok) throw new Error("Erro ao buscar jogos.");
-            return await response.json();
+            const response = await api.get(`/users/${discordId}/steam/games`);
+            return response.data;
         } catch {
             return null;
         }
@@ -59,7 +69,6 @@ export function useSteamProfile(discordId: string) {
 
     const saveShowcase = useCallback(
         async (games: SteamGame[]): Promise<boolean> => {
-            const token = localStorage.getItem("ohara-token");
             try {
                 const payload = {
                     games: games.map((g) => ({
@@ -70,18 +79,7 @@ export function useSteamProfile(discordId: string) {
                         iconUrl: g.iconUrl,
                     })),
                 };
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/users/me/steam/showcase`,
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify(payload),
-                    }
-                );
-                if (!response.ok) throw new Error("Falha ao salvar showcase.");
+                await api.patch(`/users/me/steam/showcase`, payload);
                 await fetchSummary();
                 return true;
             } catch {
@@ -93,31 +91,17 @@ export function useSteamProfile(discordId: string) {
 
     const registerSteam = useCallback(
         async (steamUrl: string): Promise<boolean> => {
-            const token = localStorage.getItem("ohara-token");
             try {
-                const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/users/me/steam/add`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ steamUrl }),
-                    }
-                );
-                if (!response.ok) throw new Error("Erro ao registrar Steam.");
-
+                await api.put(`/users/me/steam/add`, { steamUrl });
                 setTimeout(() => {
                     window.location.reload();
                 }, 1500);
-
                 return true;
             } catch {
                 return false;
             }
         },
-        [fetchSummary]
+        []
     );
 
     return { summary, loading, error, fetchGames, saveShowcase, reload: fetchSummary, registerSteam };
