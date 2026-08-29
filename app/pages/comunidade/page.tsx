@@ -13,7 +13,7 @@ export default function Comunidade() {
     return (
         <div className="min-h-screen text-zinc-100">
             {/* Hero / Boas-vindas */}
-            <section className="relative px-6 md:px-20 pt-20 pb-16 overflow-hidden">
+            <section className="relative px-6 md:px-20 pt-2 pb-16 overflow-hidden">
                 {/* Glow decorativo de fundo */}
                 <div
                     aria-hidden
@@ -21,12 +21,6 @@ export default function Comunidade() {
                                bg-gradient-radial from-orange-600/20 via-red-700/10 to-transparent blur-3xl"
                 />
 
-                {/* Linha decorativa topo */}
-                <div className="relative z-10 mb-10 flex items-center gap-4">
-                    <span className="h-px flex-1 bg-linear-to-r from-transparent via-zinc-700 to-transparent" />
-                    <span className="text-xs tracking-[0.25em] uppercase text-zinc-500 font-mono">Comunidade</span>
-                    <span className="h-px flex-1 bg-linear-to-r from-transparent via-zinc-700 to-transparent" />
-                </div>
             </section>
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 px-8">
                 {/* Cabeçalho da seção */}

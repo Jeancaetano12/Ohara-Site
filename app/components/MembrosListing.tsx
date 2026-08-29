@@ -151,7 +151,7 @@ function Pagination({
             <button
                 disabled={page === 1}
                 onClick={() => onPageChange(page - 1)}
-                className="px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-400 border border-zinc-800
+                className="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-400 border border-zinc-800
                            hover:border-zinc-600 hover:text-zinc-200 disabled:opacity-30 disabled:cursor-not-allowed
                            transition-all duration-150"
             >
@@ -165,7 +165,7 @@ function Pagination({
                     <button
                         key={p}
                         onClick={() => onPageChange(p as number)}
-                        className="w-8 h-8 rounded-lg text-xs font-mono transition-all duration-150"
+                        className="w-8 h-8 rounded-lg text-xs font-mono transition-all duration-150 hover:bg-purple-900/20"
                         style={
                             p === page
                                 ? { background: "#8b5cf622", border: "1px solid #8b5cf666", color: "#c4b5fd" }
@@ -180,7 +180,7 @@ function Pagination({
             <button
                 disabled={page === totalPages}
                 onClick={() => onPageChange(page + 1)}
-                className="px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-400 border border-zinc-800
+                className="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-mono text-zinc-400 border border-zinc-800
                            hover:border-zinc-600 hover:text-zinc-200 disabled:opacity-30 disabled:cursor-not-allowed
                            transition-all duration-150"
             >
@@ -244,7 +244,7 @@ export default function MembrosListing() {
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Buscar membro por nome, apelido..."
+                        placeholder="Buscar membro por nome ou apelido..."
                         className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700/60
                                    text-sm text-zinc-200 placeholder-zinc-600
                                    focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-600
@@ -266,7 +266,7 @@ export default function MembrosListing() {
                 <button
                     onClick={handleSearch}
                     disabled={!query.trim()}
-                    className="px-4 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700/60 text-sm text-zinc-300 font-medium
+                    className="cursor-pointer px-4 py-2.5 rounded-xl bg-zinc-800 border border-zinc-700/60 text-sm text-zinc-300 font-medium
                                hover:bg-zinc-700 hover:text-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed
                                transition-all duration-200 shrink-0 active:scale-95"
                 >
