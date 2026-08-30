@@ -50,9 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           serverNickName: profile.serverNickName,
           serverAvatarUrl: profile.serverAvatarUrl,
         });
+
+        console.log(`${profile.globalName}, logou.`)
         if (redirectOnSuccess) {
-           router.push('/');
-           notify('Login realizado com sucesso!', 'success');
+          router.push('/');
+          notify('Login realizado com sucesso!', 'success');
         }
       } else {
         setUser(null);
@@ -74,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-        await api.post('/auth/logout'); 
+      await api.post('/auth/logout');
     } catch (e) { }
     setUser(null);
     router.push('/');
