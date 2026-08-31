@@ -3,17 +3,33 @@
 
 import { useEffect, useRef, Suspense } from 'react';
 import { useAuth } from '@/app/_context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 function AuthSuccessContent() {
   const { login, user } = useAuth();
   const processedRef = useRef(false);
+  const router = useRouter();
 
   useEffect(() => {
+    // Evita chamadas duplicadas no React Strict Mode
     if (processedRef.current || user) return;
-    processedRef.current = true;
-    // O cookie já foi setado pelo backend, apenas precisamos validar a sessão
-    login();
-  }, [login, user]);
+    
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+
+    if (code) {
+      processedRef.current = true;
+      
+      // Limpa a URL para que o código temporário não fique visível
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Chama o login passando o código temporário para troca
+      login(code);
+    } else {
+      // Se não tem código, manda pra home
+      router.push('/');
+    }
+  }, [login, user, router]);
 
   return (
     <div className="text-center">

@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode, useCallback 
 import { useRouter } from 'next/navigation';
 import { useNotification } from './NotificationContext';
 import { api } from '../_hooks/fetcher';
+import { jwtDecode } from 'jwt-decode';
 
 interface DecodedToken {
   sub: string;
@@ -19,7 +20,7 @@ interface DecodedToken {
 
 interface AuthContextType {
   user: DecodedToken | null;
-  login: () => void;
+  login: (code: string) => Promise<void>;
   checkAuth: (redirectOnSuccess?: boolean) => Promise<void>;
   logout: () => void;
   expire: () => void;
@@ -36,54 +37,87 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = useCallback(async (redirectOnSuccess = false) => {
     setIsLoading(true);
-    try {
-      const response = await api.get('/users/me');
-      const profile = response.data;
-      if (profile) {
-        setUser({
-          sub: profile.id,
-          discordId: profile.discordId,
-          globalName: profile.globalName,
-          avatarUrl: profile.avatarUrl,
-          username: profile.username,
-          email: profile.email,
-          serverNickName: profile.serverNickName,
-          serverAvatarUrl: profile.serverAvatarUrl,
-        });
 
-        console.log(`${profile.globalName}, logou.`)
-        if (redirectOnSuccess) {
-          router.push('/');
-          notify('Login realizado com sucesso!', 'success');
-        }
-      } else {
-        setUser(null);
+    // Verifica se temos o token no LocalStorage
+    const token = typeof window !== 'undefined' ? localStorage.getItem('@ohara:token') : null;
+
+    if (!token) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const decoded = jwtDecode<DecodedToken>(token);
+
+      setUser({
+        sub: decoded.sub,
+        discordId: decoded.discordId,
+        globalName: decoded.globalName,
+        avatarUrl: decoded.avatarUrl,
+        username: decoded.username,
+        email: decoded.email,
+        serverNickName: decoded.serverNickName,
+        serverAvatarUrl: decoded.serverAvatarUrl,
+      });
+
+      console.log(`${decoded.globalName || decoded.username}, sessão validada.`);
+
+      if (redirectOnSuccess) {
+        router.push('/');
+        notify('Login realizado com sucesso!', 'success');
       }
     } catch (error) {
+      console.error("Token invalido ou expirado", error);
+      localStorage.removeItem('@ohara:token');
       setUser(null);
     } finally {
       setIsLoading(false);
     }
   }, [router, notify]);
 
+  // Executa uma vez quando o provider é montado
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  const login = useCallback(async () => {
-    await checkAuth(true);
-  }, [checkAuth]);
+  const login = useCallback(async (code: string) => {
+    setIsLoading(true);
+    try {
+      // Envia o código temporário para o backend para trocar pelo JWT permanente
+      const response = await api.post('/auth/exchange', { code });
+
+      // Se o backend retornar o token como "access_token" no JSON:
+      const jwt = response.data.access_token;
+
+      if (jwt) {
+        console.log(`JWT obtido com sucesso!`);
+        localStorage.setItem('@ohara:token', jwt);
+        await checkAuth(true); // O checkAuth agora vai ler do localStorage, decodificar e redirecionar
+      } else {
+        throw new Error("Token não retornado pelo servidor");
+      }
+    } catch (error) {
+      console.error("Falha ao trocar código temporário pelo JWT", error);
+      notify('Falha ao autenticar. Tente fazer login novamente.', 'error');
+      setUser(null);
+      setIsLoading(false);
+      router.push('/');
+    }
+  }, [checkAuth, notify, router]);
 
   const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
     } catch (e) { }
+    localStorage.removeItem('@ohara:token');
     setUser(null);
     router.push('/');
     notify('Você saiu da sua conta.', 'info');
   }, [router, notify]);
 
   const expire = useCallback(() => {
+    localStorage.removeItem('@ohara:token');
     setUser(null);
     router.push('/');
     notify('Sessão expirada. Por favor, faça login novamente.', 'info');
