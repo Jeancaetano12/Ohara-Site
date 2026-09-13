@@ -1,24 +1,100 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { api } from "../../_hooks/fetcher";
+
+interface PostFeedItem {
+    id: string;
+    tittle: string;
+    media: string[];
+    capa: string | null;
+    evento: { id: string; nomeEvento: string } | null;
+}
+
 export default function BlogPage() {
+    const [posts, setPosts] = useState<PostFeedItem[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFeed = async () => {
+            try {
+                const response = await api.get('/postagens?page=1&limit=10');
+                setPosts(response.data.data || []);
+            } catch (error) {
+                console.error("Erro ao carregar o feed:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFeed();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="w-10 h-10 border-4 border-t-ohara-pink border-ohara-dark rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
     return (
-        <div className="bg-linear-to-br from-red-50/50 via-orange-50/50 to-red-50/50 dark:from-red-900/20 dark:via-orange-900/20 dark:to-red-900/20 
-                          p-6 mr-20 ml-20 mt-20 rounded-2xl shadow-lg border border-red-200 dark:border-red-800/50 
-                          hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out 
-                          transform relative overflow-hidden animate-pulse">
-            <div className="text-center mb-4 relative z-10">
-                <div className="inline-flex items-center justify-center w-10 h-10 bg-linear-to-br from-red-500 to-orange-500 rounded-full mb-4 shadow-lg mx-auto">
-                    <span className="text-2xl text-white">⚠️</span>
+        <div className="max-w-6xl mx-auto p-6 flex flex-col gap-8">
+            <div className="flex justify-between items-center">
+                <h1 className="text-4xl font-bold text-ohara-white" style={{ textShadow: "var(--text-glow)" }}>
+                    Patch Notes
+                </h1>
+                
+                <Link href="/pages/blog/create" 
+                    className="bg-[var(--accent-color)] hover:bg-[var(--secondary-accent)] text-[var(--bg-color)] font-bold py-2 px-4 rounded-lg transition-colors shadow-lg hover:shadow-cyan-500/50">
+                    Criar Atualização
+                </Link>
+            </div>
+
+            {posts.length === 0 ? (
+                <div className="text-center text-ohara-white py-12 opacity-70">
+                    Nenhuma atualização encontrada.
                 </div>
-                <h2 className="text-2xl font-bold text-red-700 dark:text-red-300 mb-2">
-                    Calma lá!
-                </h2>
-            </div>
-            <div className="relative z-10">
-                <p className="text-red-600 dark:text-red-300 mb-4 text-center leading-relaxed">
-                    Esta parte ainda está em desenvolvimento.
-                </p>
-            </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {posts.map((post) => (
+                        <Link 
+                            key={post.id} 
+                            href={`/pages/blog/${post.id}`}
+                            className="bg-ohara-dark border border-[var(--separator-color)] rounded-xl overflow-hidden hover:-translate-y-2 hover:shadow-[0_0_15px_rgba(0,243,255,0.2)] transition-all duration-300"
+                        >
+                            <div className="w-full h-48 bg-black relative">
+                                {post.capa ? (
+                                    <img 
+                                        src={post.capa} 
+                                        alt={post.tittle} 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-[var(--separator-color)] text-white opacity-50">
+                                        Sem Imagem
+                                    </div>
+                                )}
+                                
+                                {post.evento && (
+                                    <div className="absolute top-3 right-3 bg-[var(--secondary-accent)] text-white text-xs px-2 py-1 rounded-md font-bold">
+                                        {post.evento.nomeEvento}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="p-5">
+                                <h2 className="text-xl font-bold text-ohara-white mb-2 line-clamp-2">
+                                    {post.tittle}
+                                </h2>
+                                <div className="text-[var(--accent-color)] text-sm font-semibold mt-4 flex items-center gap-2">
+                                    Ler mais →
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            )}
         </div>
-    )
+    );
 }
