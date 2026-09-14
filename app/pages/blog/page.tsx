@@ -43,10 +43,10 @@ export default function BlogPage() {
         <div className="max-w-6xl mx-auto p-6 flex flex-col gap-8">
             <div className="flex justify-between items-center">
                 <h1 className="text-4xl font-bold text-ohara-white" style={{ textShadow: "var(--text-glow)" }}>
-                    Patch Notes
+                    Ultimas Atividades:
                 </h1>
-                
-                <Link href="/pages/blog/create" 
+
+                <Link href="/pages/blog/create"
                     className="bg-[var(--accent-color)] hover:bg-[var(--secondary-accent)] text-[var(--bg-color)] font-bold py-2 px-4 rounded-lg transition-colors shadow-lg hover:shadow-cyan-500/50">
                     Criar Atualização
                 </Link>
@@ -59,16 +59,16 @@ export default function BlogPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {posts.map((post) => (
-                        <Link 
-                            key={post.id} 
+                        <Link
+                            key={post.id}
                             href={`/pages/blog/${post.id}`}
                             className="bg-ohara-dark border border-[var(--separator-color)] rounded-xl overflow-hidden hover:-translate-y-2 hover:shadow-[0_0_15px_rgba(0,243,255,0.2)] transition-all duration-300"
                         >
                             <div className="w-full h-48 bg-black relative">
                                 {post.capa ? (
-                                    <img 
-                                        src={post.capa} 
-                                        alt={post.tittle} 
+                                    <img
+                                        src={post.capa}
+                                        alt={post.tittle}
                                         className="w-full h-full object-cover"
                                     />
                                 ) : (
@@ -76,7 +76,7 @@ export default function BlogPage() {
                                         Sem Imagem
                                     </div>
                                 )}
-                                
+
                                 {post.evento && (
                                     <div className="absolute top-3 right-3 bg-[var(--secondary-accent)] text-white text-xs px-2 py-1 rounded-md font-bold">
                                         {post.evento.nomeEvento}
@@ -88,7 +88,7 @@ export default function BlogPage() {
                                     {post.tittle}
                                 </h2>
                                 <div className="text-[var(--accent-color)] text-sm font-semibold mt-4 flex items-center gap-2">
-                                    Ler mais →
+                                    Clique para ler mais →
                                 </div>
                             </div>
                         </Link>

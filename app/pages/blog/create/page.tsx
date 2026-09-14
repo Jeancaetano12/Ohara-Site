@@ -7,6 +7,14 @@ import { api } from "../../../_hooks/fetcher";
 import { useAuth } from "../../../_context/AuthContext";
 import { useNotification } from "../../../_context/NotificationContext";
 
+interface PostItens {
+    tittle: string;
+    content: string;
+    media: string[];
+    eventoId?: string | null;
+    discordId: string;
+}
+
 // Importa dinamicamente para evitar erro de SSR do Markdown Editor
 const MDEditor = dynamic(() => import("@uiw/react-md-editor").then((mod) => mod.default), { ssr: false });
 
@@ -14,7 +22,7 @@ export default function CreatePostPage() {
     const router = useRouter();
     const { user } = useAuth();
     const { notify } = useNotification();
-    
+
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [capa, setCapa] = useState<File | null>(null);
@@ -50,20 +58,19 @@ export default function CreatePostPage() {
         setLoading(true);
         try {
             let mediaUrls: string[] = [];
-            
+
             if (capa) {
                 const url = await handleUploadImagem(capa);
                 if (url) mediaUrls.push(url);
             }
 
-            const postData = {
-                title,
-                content,
+            const postData: PostItens = {
+                tittle: title,
+                content: content,
                 media: mediaUrls,
-                eventoId: eventoId || undefined,
-                authorId: user.sub
+                eventoId: eventoId || null,
+                discordId: user.discordId
             };
-
             await api.post("/postagens/create", postData);
             notify("Patch Note publicado com sucesso!", "success");
             router.push("/pages/blog");
@@ -83,8 +90,8 @@ export default function CreatePostPage() {
 
             <div className="flex flex-col gap-2">
                 <label className="text-[var(--text-color)] font-semibold">Título</label>
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Ex: Patch 1.2 - Nova Era"
@@ -95,8 +102,8 @@ export default function CreatePostPage() {
             <div className="flex flex-col md:flex-row gap-6">
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-[var(--text-color)] font-semibold">Imagem de Capa</label>
-                    <input 
-                        type="file" 
+                    <input
+                        type="file"
                         accept="image/*"
                         onChange={(e) => setCapa(e.target.files?.[0] || null)}
                         className="bg-ohara-dark border border-[var(--separator-color)] text-ohara-white p-2 rounded-lg cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[var(--secondary-accent)] file:text-white hover:file:bg-ohara-pink"
@@ -105,7 +112,7 @@ export default function CreatePostPage() {
 
                 <div className="flex flex-col gap-2 flex-1">
                     <label className="text-[var(--text-color)] font-semibold">ID do Evento (Opcional)</label>
-                    <input 
+                    <input
                         type="text"
                         value={eventoId}
                         onChange={(e) => setEventoId(e.target.value)}
@@ -118,14 +125,14 @@ export default function CreatePostPage() {
             <div className="flex flex-col gap-2 mt-4" data-color-mode="dark">
                 <div className="flex justify-between items-end mb-2">
                     <label className="text-[var(--text-color)] font-semibold">Conteúdo (Markdown)</label>
-                    
+
                     {/* Botão de upload no meio do texto */}
                     <label className="cursor-pointer bg-[var(--secondary-accent)] hover:bg-ohara-pink text-white py-1 px-3 rounded text-sm transition-colors shadow-lg">
                         + Inserir Imagem no Texto
-                        <input 
-                            type="file" 
-                            accept="image/*" 
-                            className="hidden" 
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
                             onChange={async (e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
@@ -139,7 +146,7 @@ export default function CreatePostPage() {
                         />
                     </label>
                 </div>
-                
+
                 <div className="border border-[var(--separator-color)] rounded-lg overflow-hidden">
                     <MDEditor
                         value={content}
@@ -150,7 +157,7 @@ export default function CreatePostPage() {
                 </div>
             </div>
 
-            <button 
+            <button
                 onClick={handlePublicar}
                 disabled={loading}
                 className="mt-6 w-full md:w-auto self-end bg-[var(--accent-color)] hover:bg-[var(--secondary-accent)] text-[var(--bg-color)] font-bold py-3 px-8 rounded-lg transition-colors shadow-[0_0_15px_rgba(0,243,255,0.4)] disabled:opacity-50"
