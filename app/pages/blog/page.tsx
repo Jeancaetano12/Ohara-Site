@@ -18,7 +18,7 @@ export default function BlogPage() {
     const [posts, setPosts] = useState<PostFeedItem[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const isDev = user?.roles.includes('Dev')
+    const isDev = user?.roles.includes('Dev') || false
 
     useEffect(() => {
         const fetchFeed = async () => {
