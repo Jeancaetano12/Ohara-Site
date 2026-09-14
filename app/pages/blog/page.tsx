@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "../../_context/AuthContext";
 import { api } from "../../_hooks/fetcher";
 
 interface PostFeedItem {
@@ -13,8 +14,11 @@ interface PostFeedItem {
 }
 
 export default function BlogPage() {
+    const { user } = useAuth();
     const [posts, setPosts] = useState<PostFeedItem[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const isDev = user?.roles.includes('Dev')
 
     useEffect(() => {
         const fetchFeed = async () => {
@@ -43,13 +47,14 @@ export default function BlogPage() {
         <div className="max-w-6xl mx-auto p-6 flex flex-col gap-8">
             <div className="flex justify-between items-center">
                 <h1 className="text-4xl font-bold text-ohara-white" style={{ textShadow: "var(--text-glow)" }}>
-                    Ultimas Atividades:
+                    Ultimas Atividades
                 </h1>
-
-                <Link href="/pages/blog/create"
-                    className="bg-[var(--accent-color)] hover:bg-[var(--secondary-accent)] text-[var(--bg-color)] font-bold py-2 px-4 rounded-lg transition-colors shadow-lg hover:shadow-cyan-500/50">
-                    Criar Atualização
-                </Link>
+                {isDev && (
+                    <Link href="/pages/blog/create"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-ohara-pink to-ohara-orange text-white font-bold text-lg shadow-lg hover:scale-105 transition-all">
+                        Criar Atualização
+                    </Link>
+                )}
             </div>
 
             {posts.length === 0 ? (

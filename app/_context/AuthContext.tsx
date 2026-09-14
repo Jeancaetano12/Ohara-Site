@@ -16,6 +16,7 @@ interface DecodedToken {
   email?: string;
   serverNickName: string | null;
   serverAvatarUrl: string | null;
+  roles: string[];
 }
 
 interface AuthContextType {
@@ -59,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email: decoded.email,
         serverNickName: decoded.serverNickName,
         serverAvatarUrl: decoded.serverAvatarUrl,
+        roles: decoded.roles,
       });
 
       console.log(`${decoded.globalName || decoded.username}, sessão validada.`);
