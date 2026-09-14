@@ -16,9 +16,18 @@ interface PostFeedItem {
 export default function BlogPage() {
     const { user } = useAuth();
     const [posts, setPosts] = useState<PostFeedItem[]>([]);
+    const [isDev, setIsDev] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const isDev = user?.roles.includes('Dev') || false
+    useEffect(() => {
+        const checkDevRole = async () => {
+            if (user?.roles) {
+                const rolesDev = user.roles;
+                setIsDev(rolesDev.includes('Dev'));
+            }
+        };
+        checkDevRole();
+    }, [user]);
 
     useEffect(() => {
         const fetchFeed = async () => {
