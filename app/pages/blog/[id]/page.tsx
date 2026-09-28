@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import {
     ArrowLeft,
     CalendarDays,
@@ -285,7 +286,7 @@ export default function LerPostPage() {
                                 prose-li:text-gray-300
                                 prose-hr:border-white/10
                             ">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                                     {post.content}
                                 </ReactMarkdown>
                             </div>
